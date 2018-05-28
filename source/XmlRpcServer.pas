@@ -113,6 +113,7 @@ type
     FLock: TCriticalSection;
     FIntrospect: Boolean;
     {introspection extension methods }
+  public
     procedure SystemListMethods(Thread: TRpcThread; const MethodName: string;
         List: TList; Return: TRpcReturn);
     procedure SystemMethodHelp(Thread: TRpcThread; const MethodName: string;
@@ -120,6 +121,7 @@ type
     procedure SystemMethodSignature(Thread: TRpcThread;
         const MethodName: string; List: TList; Return: TRpcReturn);
     { end introspection extension methods }
+  private
     procedure DataPosted(Thread: TRpcThread; RequestInfo: TIdHTTPRequestInfo;
       ResponseInfo: TIdHTTPResponseInfo);
   protected
@@ -307,9 +309,9 @@ end;
 
 procedure TRpcServerParser.Parse(const Data: string);
 var
-  tmp: AnsiString;
+  Request: AnsiString;
 begin
-  tmp := Data;
+  Request := AnsiString(Data);
   FParser.LoadFromBuffer(PAnsiChar(tmp));
   FParser.StartScan;
   FParser.Normalize := False;
@@ -383,7 +385,14 @@ begin
       'Requested method was not registered on the server');
     AResponseInfo.ContentType    := 'text/xml';
     AResponseInfo.ServerSoftware := 'DELPHI XMLRPC SERVER';
-    AResponseInfo.ContentText    := RpcReturn.ResponseXML;
+    {$IFDEF UNICODE}
+    AResponseInfo.ContentStream := TMemoryStream.Create;
+    AResponseInfo.ContentStream.WriteBuffer(
+      Pointer(RpcReturn.ResponseXML)^, Length(RpcReturn.ResponseXML) * SizeOf(Char));
+    AResponseInfo.ContentStream.Position := 0;
+    {$ELSE}
+    AResponseInfo.ContentText := RpcReturn.ResponseXML;
+    {$ENDIF}
   finally
     RpcReturn.Free;
   end;
@@ -434,7 +443,11 @@ begin
           needs to be implemented to allow per-thread parser allocation.
         }
         Parser := GetParser;
+        {$IFDEF UNICODE}
+        Parser.Parse(StreamToString(RequestInfo.PostStream));
+        {$ELSE}
         Parser.Parse(RequestInfo.UnparsedParams);
+        {$ENDIF}
         { PMM alteration }
         List := Parser.GetParameters;
         RequestName := Parser.RequestName;
@@ -454,9 +467,16 @@ begin
 
       if Found then
       begin
-        ResponseInfo.ContentType    := 'text/xml';
+        ResponseInfo.ContentType := 'text/xml';
         ResponseInfo.ServerSoftware := 'DELPHI XMLRPC SERVER';
-        ResponseInfo.ContentText    := RpcReturn.ResponseXML;
+        {$IFDEF UNICODE}
+        ResponseInfo.ContentStream := TMemoryStream.Create;
+        ResponseInfo.ContentStream.WriteBuffer(
+          Pointer(RpcReturn.ResponseXML)^, Length(RpcReturn.ResponseXML) * SizeOf(Char));
+        ResponseInfo.ContentStream.Position := 0;
+        {$ELSE}
+        ResponseInfo.ContentText := RpcReturn.ResponseXML;
+        {$ENDIF}
       end;
     except
       on E: Exception do
@@ -464,7 +484,14 @@ begin
         RpcReturn.SetError(999, E.Message);
         ResponseInfo.ContentType := 'text/xml';
         ResponseInfo.ServerSoftware := 'DELPHI XMLRPC SERVER';
+        {$IFDEF UNICODE}
+        ResponseInfo.ContentStream := TMemoryStream.Create;
+        ResponseInfo.ContentStream.WriteBuffer(
+          Pointer(RpcReturn.ResponseXML)^, Length(RpcReturn.ResponseXML) * SizeOf(Char));
+        ResponseInfo.ContentStream.Position := 0;
+        {$ELSE}
         ResponseInfo.ContentText := RpcReturn.ResponseXML;
+        {$ENDIF}
       end;
     end;
   finally

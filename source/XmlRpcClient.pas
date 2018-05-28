@@ -55,6 +55,14 @@ uses
   LibXmlParser;
 
 type
+
+{$IFDEF INDY10}
+    TIndyInteger = Int64;
+{$ELSE}
+    TIndyInteger = Integer;
+{$ENDIF}
+
+
   TRpcClientParser = class(TObject)
   private
     FStack: TObjectStack;
@@ -96,8 +104,8 @@ type
     FOnWork: TWorkEvent;
     FOnWorkBegin: TWorkBeginEvent;
     FOnWorkEnd: TWorkEndEvent;
-    procedure DoWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Integer);
-    procedure DoWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Integer);
+    procedure DoWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: TIndyInteger);
+    procedure DoWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: TIndyInteger);
     procedure DoWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
   protected
     FSession: TIdHTTP;
@@ -141,8 +149,8 @@ const
 
 implementation
 
-uses
 {$IFDEF WIN32}
+uses
   Windows;
 {$ENDIF}
 
@@ -185,6 +193,8 @@ end ;
 {------------------------------------------------------------------------------}
 
 procedure TRpcClientParser.Parse(Data: TXmlString);
+var
+  Response: AnsiString;
 begin
   FRpcResult := TRpcResult.Create;
 
@@ -211,9 +221,10 @@ begin
   //CLINTON - 16/9/2003  
   if not Assigned(FStructNames) then  
     FStructNames := TXmlStringList.Create;
-
+    
+  Response := AnsiString(Data);
   FRpcResult.Clear;
-  FParser.LoadFromBuffer(PXmlChar(Data));
+  FParser.LoadFromBuffer(PXmlChar(Response));
   FParser.StartScan;
   FParser.Normalize := False;
   while FParser.Scan do
@@ -327,14 +338,14 @@ begin
 end;
 
 procedure TRpcCaller.DoWork(ASender: TObject; AWorkMode: TWorkMode;
-  AWorkCount: Integer);
+  AWorkCount: TIndyInteger);
 begin
   if Assigned(OnWork) then
     OnWork(Self, AWorkMode, AWorkCount);
 end;
 
 procedure TRpcCaller.DoWorkBegin(ASender: TObject; AWorkMode: TWorkMode;
-  AWorkCountMax: Integer);
+  AWorkCountMax: TIndyInteger);
 begin
   if Assigned(OnWorkBegin) then
     OnWorkBegin(Self, AWorkMode, AWorkCountMax);
