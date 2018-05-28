@@ -56,7 +56,7 @@ uses
   XmlRpcUnicode,
   Classes
 {$IFDEF INDY9}
-  , IdHash
+  , IdHashMessageDigest, IdHash
 {$ENDIF}
 {$IFDEF ACTIVEX}
   , Variants

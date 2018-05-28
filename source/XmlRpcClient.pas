@@ -51,6 +51,7 @@ uses
   IdHashMessageDigest,
   IdHash,
 {$ENDIF}
+
   LibXmlParser;
 
 type
@@ -92,9 +93,12 @@ type
     FSSLKeyFile: TXmlString;
     FEndPoint: TXmlString;
     FProxyBasicAuth: Boolean;
-    function Post(const RawData: TXmlString): TXmlString;
+  protected
+    FSession: TIdHTTP;
+    function Post(const RawData: TXmlString): TXmlString; virtual;
   public
-    constructor Create;
+    constructor Create; virtual;
+    destructor Destroy; override;
     property EndPoint: TXmlString read FEndPoint write FEndPoint;
     property HostName: TXmlString read FHostName write FHostName;
     property HostPort: Integer read FHostPort write FHostPort;
@@ -114,7 +118,7 @@ type
 {$IFDEF INDY9}
     function Execute(RpcFunction: IRpcFunction; Ttl: Integer): IRpcResult; overload;
 {$ENDIF}
-    function Execute(const XmlRequest: TXmlString): IRpcResult; overload;
+    function Execute(const XmlRequest: TXmlString): IRpcResult; overload; virtual;
     function Execute(Value: IRpcFunction): IRpcResult; overload;
     procedure DeleteOldCache(Ttl: Integer);
   end;
@@ -127,6 +131,9 @@ const
     'Invalid payload received from xml-rpc server';
 
 implementation
+
+uses
+  App.Debug;
 
 {------------------------------------------------------------------------------}
 { RPC PARSER CONSTRUCTOR                                                       }
@@ -232,7 +239,8 @@ begin
   HashMessageDigest := TIdHashMessageDigest5.Create;
   try
     { determine the md5 digest hash of the request }
-    Hash := Hash128AsHex(HashMessageDigest.HashValue(XmlRequest));
+    //Hash := Hash128AsHex(HashMessageDigest.HashValue(XmlRequest));
+    Hash := HashMessageDigest.HashStringAsHex(XmlRequest);
   finally
     HashMessageDigest.Free;
   end;
@@ -280,25 +288,13 @@ end;
 {------------------------------------------------------------------------------}
 { NON - CACHED WEB CALL with XML string parameter                                                     }
 {------------------------------------------------------------------------------}
-
 function TRpcCaller.Execute(const XmlRequest: TXmlString): IRpcResult;
 var
   XmlResponse: TXmlString;
-  List: TStringList;
 begin
-  List:= TStringList.Create;
-  List.Text := XmlRequest;
-  List.SaveToFile('XmlRequest.xml');
-
   XmlResponse := Post(XmlRequest);
-
-  List.Text := XmlResponse;
-  List.SaveToFile('XmlResponse.xml');
-
   Parse(XmlResponse);
   Result := FRpcResult;
-
-  List.Free;
 end;
 
 {------------------------------------------------------------------------------}
@@ -320,6 +316,7 @@ begin
   end;
 end;
 
+
 {------------------------------------------------------------------------------}
 { POST THE REQUEST TO THE RPC SERVER                                           }
 {------------------------------------------------------------------------------}
@@ -332,6 +329,7 @@ var
   IdSSLIOHandlerSocket: TIdSSLIOHandlerSocketOpenSSL;
   RawDataFix: string;
 begin
+  DebugProcedure('Begin');
   SendStream := nil;
   ResponseStream := nil;
   IdSSLIOHandlerSocket := nil;
@@ -342,6 +340,10 @@ begin
     StringToStream(RawDataFix, SendStream); { convert to a stream }
     SendStream.Position := 0;
     Session := TIdHttp.Create(nil);
+
+   // Session.ReadTimeout := 100;
+   // Session.ConnectTimeout := 1000;
+
     try
       IdSSLIOHandlerSocket := nil;
       if (FSSLEnable) then
@@ -352,6 +354,7 @@ begin
         IdSSLIOHandlerSocket.SSLOptions.KeyFile := FSSLKeyFile;
         Session.IOHandler := IdSSLIOHandlerSocket;
       end;
+
 
       { proxy setup }
       if (FProxyName <> '') then
@@ -380,11 +383,12 @@ begin
       Session.Request.ContentLength := Length(RawDataFix);
       if not FSSLEnable then
         if FHostPort = 80 then
-          Session.Post('http://' + FHostName + FEndPoint, SendStream,
-            ResponseStream)
+          Session.Post('http://' + FHostName + FEndPoint, SendStream, ResponseStream)
         else
-          Session.Post('http://' + FHostName + ':' + IntToStr(FHostPort) +
-            FEndPoint, SendStream, ResponseStream);
+        begin
+          Session.Post('http://' + FHostName + ':' + IntToStr(FHostPort) + FEndPoint, SendStream, ResponseStream);
+        end;
+
 
       if FSSLEnable then
         Session.Post('https://' + FHostName + ':' + IntToStr(FHostPort) +
@@ -399,7 +403,10 @@ begin
     ResponseStream.Free;
     SendStream.Free;
   end;
+
+  DebugProcedure('End');
 end;
+
 
 {------------------------------------------------------------------------------}
 
@@ -410,6 +417,18 @@ begin
   FSSLEnable := False;
   FProxyBasicAuth := False;
 end;
+
+destructor TRpcCaller.Destroy;
+begin
+  if Assigned(FSession) then
+  begin
+    FSession.Free;
+    FSession := nil;
+  end;
+
+  inherited;
+end;
+
 
 {------------------------------------------------------------------------------}
 
