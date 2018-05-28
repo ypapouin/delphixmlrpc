@@ -46,13 +46,13 @@
 
   Method TRpcCustomItem.GetAsString extended to
   convert different data types (Integer, Float, Base64,
-  DateTime and Boolean) into strings.
+  DateTime and Boolean) into AnsiStrings.
 
   Methods TRpcArray.GetAsXML, LoadRawData and
   TRpcStruct.GetAsXML, LoadRawData and
   TRpcFunction.GetBodyXML now use FloatToRpcStr
   resp. RpcStrToFloat for float convertion into
-  XML string and vice versa.
+  XML AnsiString and vice versa.
 
   Revision 1.1.1.1  2003/12/03 22:37:46  iwache
   Initial import of release 2.0.0
@@ -64,7 +64,7 @@ unit XmlRpcTypes;
 interface
 
 uses
-  SysUtils, Classes, Contnrs, DIMime, XmlRpcCommon;
+  SysUtils, Classes, Contnrs, DIMime, XmlRpcCommon, XmlRpcUnicode;
 
 type
   IRpcArray = interface;
@@ -75,10 +75,10 @@ type
 
   IRpcCustomItem = interface(IInterface)
   ['{3441C47B-364D-4BE6-834E-E05C4FCAE9A6}']
-    function GetAsRawString: string;
-    procedure SetAsRawString(const Value: string);
-    function GetAsString: string;
-    procedure SetAsString(const Value: string);
+    function GetAsRawString: AnsiString;
+    procedure SetAsRawString(const Value: AnsiString);
+    function GetAsString: AnsiString;
+    procedure SetAsString(const Value: AnsiString);
     function GetAsInteger: Integer;
     procedure SetAsInteger(Value: Integer);
     function GetAsFloat: Double;
@@ -87,14 +87,14 @@ type
     procedure SetAsBoolean(Value: Boolean);
     function GetAsDateTime: TDateTime;
     procedure SetAsDateTime(Value: TDateTime);
-    function GetAsBase64Str: string;
-    procedure SetAsBase64Str(const Value: string);
+    function GetAsBase64Str: AnsiString;
+    procedure SetAsBase64Str(const Value: AnsiString);
     function GetAsArray: IRpcArray;
     procedure SetAsArray(Value: IRpcArray);
     function GetAsStruct: IRpcStruct;
     procedure SetAsStruct(Value: IRpcStruct);
-    function GetAsBase64Raw: string;
-    procedure SetAsBase64Raw(const Value: string);
+    function GetAsBase64Raw: AnsiString;
+    procedure SetAsBase64Raw(const Value: AnsiString);
     function GetDataType: TDataType;
 
     procedure Clear;
@@ -109,20 +109,20 @@ type
     function IsStruct: Boolean;
     procedure Base64StrLoadFromStream(Stream: TStream);
     procedure Base64StrSaveToStream(Stream: TStream);
-    procedure Base64StrLoadFromFile(const FileName: string);
-    procedure Base64StrSaveToFile(const FileName: string);
+    procedure Base64StrLoadFromFile(const FileName: AnsiString);
+    procedure Base64StrSaveToFile(const FileName: AnsiString);
     procedure StrLoadFromStream(Stream: TStream);
     procedure StrSaveToStream(Stream: TStream);
-    procedure StrLoadFromFile(const FileName: string);
-    procedure StrSaveToFile(const FileName: string);
-    property AsRawString: string read GetAsRawString write SetAsRawString;
-    property AsString: string read GetAsString write SetAsString;
+    procedure StrLoadFromFile(const FileName: AnsiString);
+    procedure StrSaveToFile(const FileName: AnsiString);
+    property AsRawString: AnsiString read GetAsRawString write SetAsRawString;
+    property AsString: AnsiString read GetAsString write SetAsString;
     property AsInteger: Integer read GetAsInteger write SetAsInteger;
     property AsFloat: Double read GetAsFloat write SetAsFloat;
     property AsBoolean: Boolean read GetAsBoolean write SetAsBoolean;
     property AsDateTime: TDateTime read GetAsDateTime write SetAsDateTime;
-    property AsBase64Str: string read GetAsBase64Str write SetAsBase64Str;
-    property AsBase64Raw: string read GetAsBase64Raw write SetAsBase64Raw;
+    property AsBase64Str: AnsiString read GetAsBase64Str write SetAsBase64Str;
+    property AsBase64Raw: AnsiString read GetAsBase64Raw write SetAsBase64Raw;
     property AsArray: IRpcArray read GetAsArray write SetAsArray;
     property AsStruct: IRpcStruct read GetAsStruct write SetAsStruct;
     property DataType: TDataType read GetDataType;
@@ -131,18 +131,18 @@ type
   TRpcCustomItem = class(TInterfacedObject)
   private
     FDataType: TDataType;
-    FString: string;
+    FString: AnsiString;
     FInteger: Integer;
     FFloat: Double;
     FBoolean: Boolean;
     FDateTime: TDateTime;
-    FBase64: string;
+    FBase64: AnsiString;
     FStruct: IRpcStruct;
     FArray: IRpcArray;
-    function GetAsRawString: string;
-    procedure SetAsRawString(const Value: string);
-    function GetAsString: string;
-    procedure SetAsString(const Value: string);
+    function GetAsRawString: AnsiString;
+    procedure SetAsRawString(const Value: AnsiString);
+    function GetAsString: AnsiString;
+    procedure SetAsString(const Value: AnsiString);
     function GetAsInteger: Integer;
     procedure SetAsInteger(Value: Integer);
     function GetAsFloat: Double;
@@ -151,13 +151,13 @@ type
     procedure SetAsBoolean(Value: Boolean);
     function GetAsDateTime: TDateTime;
     procedure SetAsDateTime(Value: TDateTime);
-    function GetAsBase64Str: string;
-    procedure SetAsBase64Str(const Value: string);
+    function GetAsBase64Str: AnsiString;
+    procedure SetAsBase64Str(const Value: AnsiString);
     function GetAsArray: IRpcArray;
     procedure SetAsArray(Value: IRpcArray);
     function GetAsStruct: IRpcStruct;
-    function GetAsBase64Raw: string;
-    procedure SetAsBase64Raw(const Value: string);
+    function GetAsBase64Raw: AnsiString;
+    procedure SetAsBase64Raw(const Value: AnsiString);
     function GetDataType: TDataType;
     function GetAsVariant: Variant;
     procedure SetAsVariant(Value: Variant);
@@ -176,20 +176,20 @@ type
     function IsStruct: Boolean;
     procedure Base64StrLoadFromStream(Stream: TStream); virtual;
     procedure Base64StrSaveToStream(Stream: TStream); virtual;
-    procedure Base64StrLoadFromFile(const FileName: string); virtual;
-    procedure Base64StrSaveToFile(const FileName: string); virtual;
+    procedure Base64StrLoadFromFile(const FileName: AnsiString); virtual;
+    procedure Base64StrSaveToFile(const FileName: AnsiString); virtual;
     procedure StrLoadFromStream(Stream: TStream); virtual;
     procedure StrSaveToStream(Stream: TStream); virtual;
-    procedure StrLoadFromFile(const FileName: string); virtual;
-    procedure StrSaveToFile(const FileName: string); virtual;
-    property AsRawString: string read GetAsRawString write SetAsRawString;
-    property AsString: string read GetAsString write SetAsString;
+    procedure StrLoadFromFile(const FileName: AnsiString); virtual;
+    procedure StrSaveToFile(const FileName: AnsiString); virtual;
+    property AsRawString: AnsiString read GetAsRawString write SetAsRawString;
+    property AsString: AnsiString read GetAsString write SetAsString;
     property AsInteger: Integer read GetAsInteger write SetAsInteger;
     property AsFloat: Double read GetAsFloat write SetAsFloat;
     property AsBoolean: Boolean read GetAsBoolean write SetAsBoolean;
     property AsDateTime: TDateTime read GetAsDateTime write SetAsDateTime;
-    property AsBase64Str: string read GetAsBase64Str write SetAsBase64Str;
-    property AsBase64Raw: string read GetAsBase64Raw write SetAsBase64Raw;
+    property AsBase64Str: AnsiString read GetAsBase64Str write SetAsBase64Str;
+    property AsBase64Raw: AnsiString read GetAsBase64Raw write SetAsBase64Raw;
     property AsArray: IRpcArray read GetAsArray write SetAsArray;
     property AsStruct: IRpcStruct read GetAsStruct write SetAsStruct;
     property DataType: TDataType read GetDataType;
@@ -204,35 +204,35 @@ type
 
   TRpcStructItem = class(TRpcCustomItem)
   private
-    FName: string;
+    FName: AnsiString;
   public
-    property Name: string read FName write FName;
+    property Name: AnsiString read FName write FName;
   end;
 
   IRpcResult = interface(IRpcCustomItem)
   ['{ACD2CA2C-65D1-4656-8FF1-F265237E090F}']
     function GetErrorCode: Integer;
-    function GetErrorMsg: string;
+    function GetErrorMsg: AnsiString;
 
-    procedure SetError(Code: Integer; const Msg: string);
+    procedure SetError(Code: Integer; const Msg: AnsiString);
     function IsError: Boolean;
     property ErrorCode: Integer read GetErrorCode;
-    property ErrorMsg: string read GetErrorMsg;
+    property ErrorMsg: AnsiString read GetErrorMsg;
   end;
 
   TRpcResult = class(TRpcCustomItem, IRpcResult)
   private
     FErrorCode: Integer;
-    FErrorMsg: string;
+    FErrorMsg: AnsiString;
     function GetErrorCode: Integer;
-    function GetErrorMsg: string;
+    function GetErrorMsg: AnsiString;
   protected
     procedure SetAsStruct(Value: IRpcStruct); override;
   public
-    procedure SetError(Code: Integer; const Msg: string);
+    procedure SetError(Code: Integer; const Msg: AnsiString);
     function IsError: Boolean;
     property ErrorCode: Integer read GetErrorCode;
-    property ErrorMsg: string read GetErrorMsg;
+    property ErrorMsg: AnsiString read GetErrorMsg;
   end;
 
   IRpcCustomArray = interface(IInterface)
@@ -240,15 +240,15 @@ type
     function GetItems(Index: Integer): TRpcArrayItem;
     procedure SetItems(Index: Integer; AItem: TRpcArrayItem);
 
-    procedure AddItem(const Value: string); overload;
+    procedure AddItem(const Value: AnsiString); overload;
     procedure AddItem(Value: Integer); overload;
     procedure AddItem(Value: Boolean); overload;
     procedure AddItem(Value: Double); overload;
     procedure AddItem(Value: IRpcStruct); overload;
     procedure AddItem(Value: IRpcArray); overload;
-    procedure AddItemBase64Raw(const Value: string);
-    procedure AddItemBase64Str(const Value: string);
-    procedure AddItemBase64StrFromFile(const FileName: string);
+    procedure AddItemBase64Raw(const Value: AnsiString);
+    procedure AddItemBase64Str(const Value: AnsiString);
+    procedure AddItemBase64StrFromFile(const FileName: AnsiString);
     procedure AddItemBase64StrFromStream(Stream: TStream);
     procedure AddItemDateTime(Value: TDateTime);
     procedure Clear;
@@ -268,15 +268,15 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    procedure AddItem(const Value: string); overload;
+    procedure AddItem(const Value: AnsiString); overload;
     procedure AddItem(Value: Integer); overload;
     procedure AddItem(Value: Boolean); overload;
     procedure AddItem(Value: Double); overload;
     procedure AddItem(Value: IRpcStruct); overload;
     procedure AddItem(Value: IRpcArray); overload;
-    procedure AddItemBase64Raw(const Value: string);
-    procedure AddItemBase64Str(const Value: string);
-    procedure AddItemBase64StrFromFile(const FileName: string);
+    procedure AddItemBase64Raw(const Value: AnsiString);
+    procedure AddItemBase64Str(const Value: AnsiString);
+    procedure AddItemBase64StrFromFile(const FileName: AnsiString);
     procedure AddItemBase64StrFromStream(Stream: TStream);
     procedure AddItemDateTime(Value: TDateTime);
     procedure Clear; virtual;
@@ -288,121 +288,121 @@ type
 
   IRpcArray = interface(IRpcCustomArray)
   ['{595D98EE-1718-44ED-94E2-0F8F7A85C247}']
-    function GetAsXML: string;
-    procedure LoadRawData(DataType: TDataType; Value: string);
+    function GetAsXML: AnsiString;
+    procedure LoadRawData(DataType: TDataType; Value: AnsiString);
   end;
 
   TRpcArray = class(TRpcCustomArray, IRpcArray)
   public
-    function GetAsXML: string;
-    procedure LoadRawData(DataType: TDataType; Value: string);
+    function GetAsXML: AnsiString;
+    procedure LoadRawData(DataType: TDataType; Value: AnsiString);
   end;
 
   IRpcStruct = interface(IInterface)
   ['{7527E27A-6B61-41D6-9546-93DC816D8285}']
-    function InternalAddItem(const Key: string): TRpcStructItem;
-    function GetKeyList: TStringList;
+    function InternalAddItem(const Key: AnsiString): TRpcStructItem;
+    function GetKeyList: TAnsiStringList;
 
     function GetItems(Index: Integer): TRpcStructItem;
     procedure SetItems(Index: Integer; AItem: TRpcStructItem);
-    function GetKeys(Key: string): TRpcStructItem;
-    procedure SetKeys(Key: string; const AItem: TRpcStructItem);
+    function GetKeys(Key: AnsiString): TRpcStructItem;
+    procedure SetKeys(Key: AnsiString; const AItem: TRpcStructItem);
 
-    procedure AddItem(const Key: string; Value: Integer); overload;
-    procedure AddItem(const Key: string; const Value: string); overload;
-    procedure AddItem(const Key: string; Value: Double); overload;
-    procedure AddItem(const Key: string; Value: Boolean); overload;
-    procedure AddItem(const Key: string; Value: IRpcArray); overload;
-    procedure AddItem(const Key: string; Value: IRpcStruct); overload;
-    procedure AddItemDateTime(const Key: string; Value: TDateTime);
-    procedure AddItemBase64Str(const Key: string; const Value: string);
-    procedure AddItemBase64Raw(const Key: string; const Value: string);
-    procedure AddItemBase64StrFromFile(const Key: string; const FileName: string);
-    procedure AddItemBase64StrFromStream(const Key: string; Stream: TStream);
-    function KeyExists(const Key: string): Boolean;
+    procedure AddItem(const Key: AnsiString; Value: Integer); overload;
+    procedure AddItem(const Key: AnsiString; const Value: AnsiString); overload;
+    procedure AddItem(const Key: AnsiString; Value: Double); overload;
+    procedure AddItem(const Key: AnsiString; Value: Boolean); overload;
+    procedure AddItem(const Key: AnsiString; Value: IRpcArray); overload;
+    procedure AddItem(const Key: AnsiString; Value: IRpcStruct); overload;
+    procedure AddItemDateTime(const Key: AnsiString; Value: TDateTime);
+    procedure AddItemBase64Str(const Key: AnsiString; const Value: AnsiString);
+    procedure AddItemBase64Raw(const Key: AnsiString; const Value: AnsiString);
+    procedure AddItemBase64StrFromFile(const Key: AnsiString; const FileName: AnsiString);
+    procedure AddItemBase64StrFromStream(const Key: AnsiString; Stream: TStream);
+    function KeyExists(const Key: AnsiString): Boolean;
     procedure Delete(Index: Integer); overload;
-    procedure Delete(const Key: string); overload;
+    procedure Delete(const Key: AnsiString); overload;
     procedure Clear;
     function Count: Integer;
-    function IndexOf(const Key: string): Integer;
-    function GetAsXML: string;
-    procedure LoadRawData(DataType: TDataType; const Key, Value: string);
-    property KeyList: TStringList read GetKeyList;
+    function IndexOf(const Key: AnsiString): Integer;
+    function GetAsXML: AnsiString;
+    procedure LoadRawData(DataType: TDataType; const Key, Value: AnsiString);
+    property KeyList: TAnsiStringList read GetKeyList;
     property Items[Index: Integer]: TRpcStructItem read GetItems write SetItems;
-    property Keys[Key: string]: TRpcStructItem read GetKeys write SetKeys; default;
+    property Keys[Key: AnsiString]: TRpcStructItem read GetKeys write SetKeys; default;
   end;
 
   TRpcStruct = class(TInterfacedObject, IRpcStruct)
   private
-    FKeyList: TStringList;
-    function InternalAddItem(const Key: string): TRpcStructItem;
-    function GetKeyList: TStringList;
+    FKeyList: TAnsiStringList;
+    function InternalAddItem(const Key: AnsiString): TRpcStructItem;
+    function GetKeyList: TAnsiStringList;
   protected
     function GetItems(Index: Integer): TRpcStructItem;
     procedure SetItems(Index: Integer; AItem: TRpcStructItem);
-    function GetKeys(Key: string): TRpcStructItem;
-    procedure SetKeys(Key: string; const AItem: TRpcStructItem);
+    function GetKeys(Key: AnsiString): TRpcStructItem;
+    procedure SetKeys(Key: AnsiString; const AItem: TRpcStructItem);
   public
     constructor Create;
     destructor Destroy; override;
-    procedure AddItem(const Key: string; Value: Integer); overload;
-    procedure AddItem(const Key: string; const Value: string); overload;
-    procedure AddItem(const Key: string; Value: Double); overload;
-    procedure AddItem(const Key: string; Value: Boolean); overload;
-    procedure AddItem(const Key: string; Value: IRpcArray); overload;
-    procedure AddItem(const Key: string; Value: IRpcStruct); overload;
-    procedure AddItemDateTime(const Key: string; Value: TDateTime);
-    procedure AddItemBase64Str(const Key: string; const Value: string);
-    procedure AddItemBase64Raw(const Key: string; const Value: string);
-    procedure AddItemBase64StrFromFile(const Key: string; const FileName: string);
-    procedure AddItemBase64StrFromStream(const Key: string; Stream: TStream);
-    function KeyExists(const Key: string): Boolean;
+    procedure AddItem(const Key: AnsiString; Value: Integer); overload;
+    procedure AddItem(const Key: AnsiString; const Value: AnsiString); overload;
+    procedure AddItem(const Key: AnsiString; Value: Double); overload;
+    procedure AddItem(const Key: AnsiString; Value: Boolean); overload;
+    procedure AddItem(const Key: AnsiString; Value: IRpcArray); overload;
+    procedure AddItem(const Key: AnsiString; Value: IRpcStruct); overload;
+    procedure AddItemDateTime(const Key: AnsiString; Value: TDateTime);
+    procedure AddItemBase64Str(const Key: AnsiString; const Value: AnsiString);
+    procedure AddItemBase64Raw(const Key: AnsiString; const Value: AnsiString);
+    procedure AddItemBase64StrFromFile(const Key: AnsiString; const FileName: AnsiString);
+    procedure AddItemBase64StrFromStream(const Key: AnsiString; Stream: TStream);
+    function KeyExists(const Key: AnsiString): Boolean;
     procedure Delete(Index: Integer); overload;
-    procedure Delete(const Key: string); overload;
+    procedure Delete(const Key: AnsiString); overload;
     procedure Clear;
     function Count: Integer;
-    function IndexOf(const Key: string): Integer;
-    function GetAsXML: string;
-    procedure LoadRawData(DataType: TDataType; const Key, Value: string);
-    property KeyList: TStringList read GetKeyList;
+    function IndexOf(const Key: AnsiString): Integer;
+    function GetAsXML: AnsiString;
+    procedure LoadRawData(DataType: TDataType; const Key, Value: AnsiString);
+    property KeyList: TAnsiStringList read GetKeyList;
     property Items[Index: Integer]: TRpcStructItem read GetItems write SetItems;
-    property Keys[Key: string]: TRpcStructItem read GetKeys write SetKeys; default;
+    property Keys[Key: AnsiString]: TRpcStructItem read GetKeys write SetKeys; default;
   end;
 
   IRpcFunction = interface(IRpcCustomArray)
   ['{8177A796-7C3B-4C01-901C-88A13DA61F85}']
-    function GetRequestXML: string;
-    function GetResponseXML: string;
-    function GetErrorXML: string;
-    function GetObjectMethod: string;
-    procedure SetObjectMethod(const Value: string);
+    function GetRequestXML: AnsiString;
+    function GetResponseXML: AnsiString;
+    function GetErrorXML: AnsiString;
+    function GetObjectMethod: AnsiString;
+    procedure SetObjectMethod(const Value: AnsiString);
 
     procedure Clear;
-    procedure SetError(Code: Integer; const Msg: string);
-    property ObjectMethod: string read GetObjectMethod write SetObjectMethod;
-    property RequestXML: string read GetRequestXML;
-    property ResponseXML: string read GetResponseXML;
-    property ErrorXML: string read GetErrorXML;
+    procedure SetError(Code: Integer; const Msg: AnsiString);
+    property ObjectMethod: AnsiString read GetObjectMethod write SetObjectMethod;
+    property RequestXML: AnsiString read GetRequestXML;
+    property ResponseXML: AnsiString read GetResponseXML;
+    property ErrorXML: AnsiString read GetErrorXML;
   end;
 
   TRpcFunction = class(TRpcCustomArray, IRpcFunction)
   private
-    FObjectMethod: string;
+    FObjectMethod: AnsiString;
     FErrorCode: Integer;
-    FErrorMsg: string;
-    function GetRequestXML: string;
-    function GetResponseXML: string;
-    function GetErrorXML: string;
-    procedure GetBodyXML(Strings: TStrings);
-    function GetObjectMethod: string;
-    procedure SetObjectMethod(const Value: string);
+    FErrorMsg: AnsiString;
+    function GetRequestXML: AnsiString;
+    function GetResponseXML: AnsiString;
+    function GetErrorXML: AnsiString;
+    procedure GetBodyXML(Strings: TAnsiStrings);
+    function GetObjectMethod: AnsiString;
+    procedure SetObjectMethod(const Value: AnsiString);
   public
     procedure Clear; override;
-    procedure SetError(Code: Integer; const Msg: string);
-    property ObjectMethod: string read GetObjectMethod write SetObjectMethod;
-    property RequestXML: string read GetRequestXML;
-    property ResponseXML: string read GetResponseXML;
-    property ErrorXML: string read GetErrorXML;
+    procedure SetError(Code: Integer; const Msg: AnsiString);
+    property ObjectMethod: AnsiString read GetObjectMethod write SetObjectMethod;
+    property RequestXML: AnsiString read GetRequestXML;
+    property ResponseXML: AnsiString read GetResponseXML;
+    property ErrorXML: AnsiString read GetErrorXML;
   end;
 
   EXmlRpcError = class(Exception)
@@ -428,22 +428,22 @@ begin
   FArray := nil;
 end;
 
-function TRpcCustomItem.GetAsRawString: string;
+function TRpcCustomItem.GetAsRawString: AnsiString;
 begin
   if (FDataType = dtString) then
     Result := FString
   else
-    raise EXmlRpcError.Create('Item is not a string type')
+    raise EXmlRpcError.Create('Item is not a AnsiString type')
 end;
 
-procedure TRpcCustomItem.SetAsRawString(const Value: string);
+procedure TRpcCustomItem.SetAsRawString(const Value: AnsiString);
 begin
   Clear;
   FDataType := dtString;
   FString := Value;
 end;
 
-function TRpcCustomItem.GetAsString: string;
+function TRpcCustomItem.GetAsString: AnsiString;
 begin
   case FDataType of
     dtString:
@@ -463,11 +463,11 @@ begin
 //    dtArray:
 //      Result := '<ARRAY>';
   else
-    raise EXmlRpcError.Create('Item type can not be converted into a string')
+    raise EXmlRpcError.Create('Item type can not be converted into a AnsiString')
   end;
 end;
 
-procedure TRpcCustomItem.SetAsString(const Value: string);
+procedure TRpcCustomItem.SetAsString(const Value: AnsiString);
 begin
   AsRawString := EncodeEntities(Value);
 end;
@@ -532,7 +532,7 @@ begin
   FDateTime := Value;
 end;
 
-function TRpcCustomItem.GetAsBase64Str: string;
+function TRpcCustomItem.GetAsBase64Str: AnsiString;
 begin
   if (FDataType = dtBase64) then
     Result := MimeDecodeString(FBase64)
@@ -541,7 +541,7 @@ begin
       EXmlRpcError.Create('Item is not a base64 type')
 end;
 
-procedure TRpcCustomItem.SetAsBase64Str(const Value: string);
+procedure TRpcCustomItem.SetAsBase64Str(const Value: AnsiString);
 begin
   Clear;
   FDataType := dtBase64;
@@ -619,7 +619,7 @@ begin
   FStruct := Value;
 end;
 
-function TRpcCustomItem.GetAsBase64Raw: string;
+function TRpcCustomItem.GetAsBase64Raw: AnsiString;
 begin
   if (FDataType = dtBase64) then
     Result := FBase64
@@ -627,7 +627,7 @@ begin
     raise EXmlRpcError.Create('Item is not a base64 type')
 end;
 
-procedure TRpcCustomItem.SetAsBase64Raw(const Value: string);
+procedure TRpcCustomItem.SetAsBase64Raw(const Value: AnsiString);
 begin
   Clear;
   FDataType := dtBase64;
@@ -684,7 +684,7 @@ begin
   StringToStream(AsBase64Str, Stream);
 end;
 
-procedure TRpcCustomItem.Base64StrSaveToFile(const FileName: string);
+procedure TRpcCustomItem.Base64StrSaveToFile(const FileName: AnsiString);
 var
   Stream: TStream;
 begin
@@ -701,7 +701,7 @@ begin
   AsBase64Str := StreamToString(Stream);
 end;
 
-procedure TRpcCustomItem.Base64StrLoadFromFile(const FileName: string);
+procedure TRpcCustomItem.Base64StrLoadFromFile(const FileName: AnsiString);
 var
   Stream: TStream;
 begin
@@ -723,7 +723,7 @@ begin
   StringToStream(AsString, Stream);
 end;
 
-procedure TRpcCustomItem.StrLoadFromFile(const FileName: string);
+procedure TRpcCustomItem.StrLoadFromFile(const FileName: AnsiString);
 var
   Stream: TStream;
 begin
@@ -735,7 +735,7 @@ begin
   end;
 end;
 
-procedure TRpcCustomItem.StrSaveToFile(const FileName: string);
+procedure TRpcCustomItem.StrSaveToFile(const FileName: AnsiString);
 var
   Stream: TStream;
 begin
@@ -764,7 +764,7 @@ begin
     raise EXmlRpcError.Create('Item is not an error type')
 end;
 
-function TRpcResult.GetErrorMsg: string;
+function TRpcResult.GetErrorMsg: AnsiString;
 begin
   if (FDataType = dtError) then
     Result := FErrorMsg
@@ -772,7 +772,7 @@ begin
     raise EXmlRpcError.Create('Item is not an error type');
 end;
 
-procedure TRpcResult.SetError(Code: Integer; const Msg: string);
+procedure TRpcResult.SetError(Code: Integer; const Msg: AnsiString);
 begin
   Clear;
   FDataType := dtError;
@@ -823,7 +823,7 @@ begin
   end;
 end;
 
-procedure TRpcCustomArray.AddItem(const Value: string);
+procedure TRpcCustomArray.AddItem(const Value: AnsiString);
 begin
   InternalAddItem.AsString := Value;
 end;
@@ -853,19 +853,19 @@ begin
   InternalAddItem.AsArray := Value;
 end;
 
-procedure TRpcCustomArray.AddItemBase64Raw(const Value: string);
+procedure TRpcCustomArray.AddItemBase64Raw(const Value: AnsiString);
 begin
   InternalAddItem.AsBase64Raw := Value;
 end;
 
-procedure TRpcCustomArray.AddItemBase64Str(const Value: string);
+procedure TRpcCustomArray.AddItemBase64Str(const Value: AnsiString);
 begin
   // Bug with double MimeEncodeString fixed
   // Thanks to Nicolas Seyer - nolics
   InternalAddItem.AsBase64Str := Value;
 end;
 
-procedure TRpcCustomArray.AddItemBase64StrFromFile(const FileName: string);
+procedure TRpcCustomArray.AddItemBase64StrFromFile(const FileName: AnsiString);
 begin
   InternalAddItem.Base64StrLoadFromFile(FileName);
 end;
@@ -911,12 +911,12 @@ end;
 ******************************** TArray ****************************************
 }
 
-function TRpcArray.GetAsXML: string;
+function TRpcArray.GetAsXML: AnsiString;
 var
   Index: Integer;
-  Strings: TStrings;
+  Strings: TAnsiStrings;
 begin
-  Strings := TStringList.Create;
+  Strings := TAnsiStringList.Create;
   try
     Strings.Add('<value>');
     Strings.Add('  <array>');
@@ -957,7 +957,7 @@ begin
   end;
 end;
 
-procedure TRpcArray.LoadRawData(DataType: TDataType; Value: string);
+procedure TRpcArray.LoadRawData(DataType: TDataType; Value: AnsiString);
 begin
   case DataType of
     dtString:
@@ -982,7 +982,7 @@ end;
 
 constructor TRpcStruct.Create;
 begin
-  FKeyList := TStringList.Create;
+  FKeyList := TAnsiStringList.Create;
 end;
 
 destructor TRpcStruct.Destroy;
@@ -997,7 +997,7 @@ begin
   inherited Destroy;
 end;
 
-function TRpcStruct.GetKeyList: TStringList;
+function TRpcStruct.GetKeyList: TAnsiStringList;
 begin
   Result := FKeyList;
 end;
@@ -1012,19 +1012,19 @@ begin
   FKeyList.Objects[Index] := AItem;
 end;
 
-function TRpcStruct.IndexOf(const Key: string): Integer;
+function TRpcStruct.IndexOf(const Key: AnsiString): Integer;
 begin
   Result := FKeyList.IndexOf(Key);
   if Result < 0 then
     raise EXmlRpcError.CreateFmt('Key [%s] not found', [Key]);
 end;
 
-function TRpcStruct.GetKeys(Key: string): TRpcStructItem;
+function TRpcStruct.GetKeys(Key: AnsiString): TRpcStructItem;
 begin
   Result := TRpcStructItem(FKeyList.Objects[IndexOf(Key)]);
 end;
 
-procedure TRpcStruct.SetKeys(Key: string; const AItem: TRpcStructItem);
+procedure TRpcStruct.SetKeys(Key: AnsiString; const AItem: TRpcStructItem);
 begin
   FKeyList.Objects[IndexOf(Key)] := AItem;
 end;
@@ -1034,7 +1034,7 @@ begin
   Result := FKeyList.Count;
 end;
 
-function TRpcStruct.KeyExists(const Key: string): Boolean;
+function TRpcStruct.KeyExists(const Key: AnsiString): Boolean;
 begin
   Result := (FKeyList.IndexOf(Key) >= 0);
 end;
@@ -1045,7 +1045,7 @@ begin
   FKeyList.Delete(Index);
 end;
 
-procedure TRpcStruct.Delete(const Key: string);
+procedure TRpcStruct.Delete(const Key: AnsiString);
 begin
   Delete(IndexOf(Key));
 end;
@@ -1059,7 +1059,7 @@ begin
   FKeyList.Clear;
 end;
 
-function TRpcStruct.InternalAddItem(const Key: string): TRpcStructItem;
+function TRpcStruct.InternalAddItem(const Key: AnsiString): TRpcStructItem;
 var
   StructItem: TRpcStructItem;
 begin
@@ -1073,69 +1073,69 @@ begin
   end;
 end;
 
-procedure TRpcStruct.AddItem(const Key, Value: string);
+procedure TRpcStruct.AddItem(const Key, Value: AnsiString);
 begin
   InternalAddItem(Key).AsString := Value;
 end;
 
-procedure TRpcStruct.AddItem(const Key: string; Value: Double);
+procedure TRpcStruct.AddItem(const Key: AnsiString; Value: Double);
 begin
   InternalAddItem(Key).AsFloat := Value;
 end;
 
-procedure TRpcStruct.AddItem(const Key: string; Value: Integer);
+procedure TRpcStruct.AddItem(const Key: AnsiString; Value: Integer);
 begin
   InternalAddItem(Key).AsInteger := Value;
 end;
 
-procedure TRpcStruct.AddItem(const Key: string; Value: IRpcArray);
+procedure TRpcStruct.AddItem(const Key: AnsiString; Value: IRpcArray);
 begin
   InternalAddItem(Key).AsArray := Value;
 end;
 
-procedure TRpcStruct.AddItem(const Key: string; Value: Boolean);
+procedure TRpcStruct.AddItem(const Key: AnsiString; Value: Boolean);
 begin
   InternalAddItem(Key).AsBoolean := Value;
 end;
 
-procedure TRpcStruct.AddItemDateTime(const Key: string; Value: TDateTime);
+procedure TRpcStruct.AddItemDateTime(const Key: AnsiString; Value: TDateTime);
 begin
   InternalAddItem(Key).AsDateTime := Value;
 end;
 
-procedure TRpcStruct.AddItem(const Key: string; Value: IRpcStruct);
+procedure TRpcStruct.AddItem(const Key: AnsiString; Value: IRpcStruct);
 begin
   InternalAddItem(Key).AsStruct := Value;
 end;
 
-procedure TRpcStruct.AddItemBase64Str(const Key, Value: string);
+procedure TRpcStruct.AddItemBase64Str(const Key, Value: AnsiString);
 begin
   InternalAddItem(Key).AsBase64Str := Value;
 end;
 
-procedure TRpcStruct.AddItemBase64Raw(const Key, Value: string);
+procedure TRpcStruct.AddItemBase64Raw(const Key, Value: AnsiString);
 begin
   InternalAddItem(Key).AsBase64Raw := Value;
 end;
 
-procedure TRpcStruct.AddItemBase64StrFromFile(const Key: string; const FileName:
-    string);
+procedure TRpcStruct.AddItemBase64StrFromFile(const Key: AnsiString; const FileName:
+    AnsiString);
 begin
   InternalAddItem(Key).Base64StrLoadFromFile(FileName);
 end;
 
-procedure TRpcStruct.AddItemBase64StrFromStream(const Key: string; Stream: 
+procedure TRpcStruct.AddItemBase64StrFromStream(const Key: AnsiString; Stream:
     TStream);
 begin
   InternalAddItem(Key).Base64StrLoadFromStream(Stream);
 end;
 
-function TRpcStruct.GetAsXML: string;
+function TRpcStruct.GetAsXML: AnsiString;
 var
   I: Integer;
-  Strings: TStrings;
+  Strings: TAnsiStrings;
 begin
-  Strings := TStringList.Create;
+  Strings := TAnsiStringList.Create;
   try
     Strings.Add('<value>');
     Strings.Add('  <struct>');
@@ -1205,7 +1205,7 @@ begin
   end;
 end;
 
-procedure TRpcStruct.LoadRawData(DataType: TDataType; const Key, Value: string);
+procedure TRpcStruct.LoadRawData(DataType: TDataType; const Key, Value: AnsiString);
 begin
   case DataType of
     dtString:
@@ -1227,12 +1227,12 @@ end;
 ******************************** TFunction *************************************
 }
 
-function TRpcFunction.GetObjectMethod: string;
+function TRpcFunction.GetObjectMethod: AnsiString;
 begin
   Result := FObjectMethod;
 end;
 
-procedure TRpcFunction.SetObjectMethod(const Value: string);
+procedure TRpcFunction.SetObjectMethod(const Value: AnsiString);
 begin
   FObjectMethod := Value;
 end;
@@ -1244,18 +1244,18 @@ begin
   inherited Clear;
 end;
 
-procedure TRpcFunction.SetError(Code: Integer; const Msg: string);
+procedure TRpcFunction.SetError(Code: Integer; const Msg: AnsiString);
 begin
   Clear;
   FErrorCode := Code;
   FErrorMsg := Msg;
 end;
 
-function TRpcFunction.GetRequestXML: string;
+function TRpcFunction.GetRequestXML: AnsiString;
 var
-  Strings: TStrings;
+  Strings: TAnsiStrings;
 begin
-  Strings := TStringList.Create;
+  Strings := TAnsiStringList.Create;
   try
     Strings.Add('<?xml version="1.0"?>');
     Strings.Add('<methodCall>');
@@ -1268,9 +1268,9 @@ begin
   end;
 end;
 
-function TRpcFunction.GetResponseXML: string;
+function TRpcFunction.GetResponseXML: AnsiString;
 var
-  Strings: TStrings;
+  Strings: TAnsiStrings;
 begin
   {if we have a error condition return the error instead}
   if FErrorCode > 0 then
@@ -1279,7 +1279,7 @@ begin
     Exit;
   end;
 
-  Strings := TStringList.Create;
+  Strings := TAnsiStringList.Create;
   try
     Strings.Add('<?xml version="1.0"?>');
     Strings.Add('<methodResponse>');
@@ -1291,11 +1291,11 @@ begin
   end;
 end;
 
-function TRpcFunction.GetErrorXML: string;
+function TRpcFunction.GetErrorXML: AnsiString;
 var
-  Strings: TStrings;
+  Strings: TAnsiStrings;
 begin
-  Strings := TStringList.Create;
+  Strings := TAnsiStringList.Create;
   try
     Strings.Add('<?xml version="1.0"?>');
     Strings.Add('<methodResponse>');
@@ -1322,7 +1322,7 @@ begin
   end;
 end;
 
-procedure TRpcFunction.GetBodyXML(Strings: TStrings);
+procedure TRpcFunction.GetBodyXML(Strings: TAnsiStrings);
 var
   I: Integer;
 begin

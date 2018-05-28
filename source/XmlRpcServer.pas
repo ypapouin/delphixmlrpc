@@ -306,8 +306,11 @@ end;
 {------------------------------------------------------------------------------}
 
 procedure TRpcServerParser.Parse(const Data: string);
+var
+  tmp: AnsiString;
 begin
-  FParser.LoadFromBuffer(PChar(Data));
+  tmp := Data;
+  FParser.LoadFromBuffer(PAnsiChar(tmp));
   FParser.StartScan;
   FParser.Normalize := False;
   while FParser.Scan do
