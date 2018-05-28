@@ -284,10 +284,21 @@ end;
 function TRpcCaller.Execute(const XmlRequest: AnsiString): IRpcResult;
 var
   XmlResponse: AnsiString;
+  List: TStringList;
 begin
+  List:= TStringList.Create;
+  List.Text := XmlRequest;
+  List.SaveToFile('XmlRequest.txt');
+
   XmlResponse := Post(XmlRequest);
+
+  List.Text := XmlResponse;
+  List.SaveToFile('XmlResponse.txt');
+
   Parse(XmlResponse);
   Result := FRpcResult;
+
+  List.Free;
 end;
 
 {------------------------------------------------------------------------------}
