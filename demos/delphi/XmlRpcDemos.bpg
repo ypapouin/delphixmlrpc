@@ -1,0 +1,39 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = rpcexplorer.exe helloserver.exe helloclient.exe pdfclient.exe \
+  thelloserver.exe thelloclient.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+
+
+
+helloserver.exe: server\simple\helloserver.dpr
+  $(DCC)
+
+helloclient.exe: client\simple\helloclient.dpr
+  $(DCC)
+
+rpcexplorer.exe: client\introspect\rpcexplorer.dpr
+  $(DCC)
+
+pdfclient.exe: client\pdfclient\pdfclient.dpr
+  $(DCC)
+
+thelloserver.exe: server\threaded\thelloserver.dpr
+  $(DCC)
+
+thelloclient.exe: client\threaded\thelloclient.dpr
+  $(DCC)
+
+

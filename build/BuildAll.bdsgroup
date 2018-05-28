@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+  <PersonalityInfo>
+    <Option>
+      <Option Name="Personality">Default.Personality</Option>
+      <Option Name="ProjectType"></Option>
+      <Option Name="Version">1.0</Option>
+      <Option Name="GUID">{201EB7BB-E3A8-456C-8ED9-A52141721E46}</Option>
+    </Option>
+  </PersonalityInfo>
+  <Default.Personality>
+    
+    
+    
+    <Projects>
+      <Projects Name="BuildXmlRpcLib.exe">BuildXmlRpcLib.bdsproj</Projects>
+<Projects Name="Project1.exe">..\tests\userlandstate\Project1.dpr</Projects>
+
+<Projects Name="Project2.exe">..\tests\coversmethod\Project2.dpr</Projects>
+
+<Projects Name="Project3.exe">..\tests\userlandtime\Project3.dpr</Projects>
+
+<Projects Name="Project4.exe">..\tests\validatorarrayofstruct\Project4.dpr</Projects>
+
+<Projects Name="rpcexplorer.exe">..\demos\delphi\client\introspect\rpcexplorer.dpr</Projects>
+
+<Projects Name="pdfclient.exe">..\demos\delphi\client\pdfclient\pdfclient.dpr</Projects>
+
+<Projects Name="helloclient.exe">..\demos\delphi\client\simple\helloclient.dpr</Projects>
+
+<Projects Name="thelloclient.exe">..\demos\delphi\client\threaded\thelloclient.dpr</Projects>
+
+<Projects Name="helloserver.exe">..\demos\delphi\server\simple\helloserver.dpr</Projects>
+
+<Projects Name="thelloserver.exe">..\demos\delphi\server\threaded\thelloserver.dpr</Projects>
+
+<Projects Name="CLXhelloclient.exe">..\demos\kylix\client\CLXhelloclient.dpr</Projects>
+
+	  <Projects Name="CLXhelloserver.exe">..\demos\kylix\server\threads\CLXhelloserver.dpr</Projects>
+	  <Projects Name="pdfdaemon.exe">..\demos\kylix\server\pdfdaemon\pdfdaemon.dpr</Projects>
+      <Projects Name="Targets">BuildXmlRpcLib.exe Project1.exe Project2.exe Project3.exe Project4.exe rpcexplorer.exe pdfclient.exe helloclient.exe thelloclient.exe helloserver.exe thelloserver.exe CLXhelloclient.exe CLXhelloserver.exe pdfdaemon.exe</Projects>
+    </Projects>
+    <Dependencies/>
+  </Default.Personality>
+</BorlandProject>

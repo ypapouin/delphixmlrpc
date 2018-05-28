@@ -1,0 +1,62 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = BuildXmlRpcLib.exe Project1.exe Project2.exe Project3.exe \
+  Project4.exe rpcexplorer.exe pdfclient.exe helloclient.exe thelloclient.exe \
+  helloserver.exe thelloserver.exe CLXhelloclient.exe CLXhelloserver.exe \
+  pdfdaemon.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+BuildXmlRpcLib.exe: BuildXmlRpcLib.dpr
+  $(DCC)
+
+Project1.exe: ..\tests\userlandstate\Project1.dpr
+  $(DCC)
+
+Project2.exe: ..\tests\coversmethod\Project2.dpr
+  $(DCC)
+
+Project3.exe: ..\tests\userlandtime\Project3.dpr
+  $(DCC)
+
+Project4.exe: ..\tests\validatorarrayofstruct\Project4.dpr
+  $(DCC)
+
+rpcexplorer.exe: ..\demos\delphi\client\introspect\rpcexplorer.dpr
+  $(DCC)
+
+pdfclient.exe: ..\demos\delphi\client\pdfclient\pdfclient.dpr
+  $(DCC)
+
+helloclient.exe: ..\demos\delphi\client\simple\helloclient.dpr
+  $(DCC)
+
+thelloclient.exe: ..\demos\delphi\client\threaded\thelloclient.dpr
+  $(DCC)
+
+helloserver.exe: ..\demos\delphi\server\simple\helloserver.dpr
+  $(DCC)
+
+thelloserver.exe: ..\demos\delphi\server\threaded\thelloserver.dpr
+  $(DCC)
+
+CLXhelloclient.exe: ..\demos\kylix\client\CLXhelloclient.dpr
+  $(DCC)
+
+CLXhelloserver.exe: ..\demos\kylix\server\threads\CLXhelloserver.dpr
+  $(DCC)
+
+pdfdaemon.exe: ..\demos\kylix\server\pdfdaemon\pdfdaemon.dpr
+  $(DCC)
+
+

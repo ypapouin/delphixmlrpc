@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#kylix application path
+apath=/root/develop/xmlrpc1_7_5/examples/kylix/server/pdfdaemon
+
+#lib location
+libs=/usr/local/kylix2/bin
+
+export LD_LIBRARY_PATH=$libs:$LD_LIBRARY_PATH
+export PATH=$PATH:$apath
+
+pdfdaemon
+
+

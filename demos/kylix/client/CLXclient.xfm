@@ -1,0 +1,76 @@
+object Form3: TForm3
+  Left = 328
+  Top = 233
+  Width = 363
+  Height = 244
+  VertScrollBar.Range = 233
+  HorzScrollBar.Range = 353
+  ActiveControl = Button1
+  Caption = 'Form3'
+  Color = clBackground
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  PixelsPerInch = 96
+  TextHeight = 13
+  TextWidth = 6
+  object Button1: TButton
+    Left = 8
+    Top = 8
+    Width = 75
+    Height = 25
+    Caption = 'Say Hello'
+    TabOrder = 0
+    OnClick = Button1Click
+  end
+  object ebMessage: TEdit
+    Left = 256
+    Top = 8
+    Width = 97
+    Height = 21
+    TabOrder = 1
+    Text = 'Hello'
+  end
+  object lstMessages: TListBox
+    Left = 104
+    Top = 72
+    Width = 249
+    Height = 161
+    TabOrder = 2
+    OnDblClick = lstMessagesDblClick
+  end
+  object btnMany: TButton
+    Left = 8
+    Top = 48
+    Width = 75
+    Height = 25
+    Caption = 'Say Hello Lots'
+    TabOrder = 3
+    OnClick = btnManyClick
+  end
+  object speHelloCount: TSpinEdit
+    Left = 8
+    Top = 80
+    Width = 73
+    Height = 21
+    Max = 1000
+    TabOrder = 4
+    Value = 100
+  end
+  object ebHost: TEdit
+    Left = 104
+    Top = 8
+    Width = 100
+    Height = 21
+    TabOrder = 5
+    Text = 'localhost'
+  end
+  object sePort: TSpinEdit
+    Left = 104
+    Top = 40
+    Width = 100
+    Height = 21
+    Max = 65535
+    TabOrder = 6
+    Value = 100
+  end
+end

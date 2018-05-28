@@ -1,0 +1,29 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = Project1.exe Project2.exe Project3.exe Project4.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+Project1.exe: userlandstate\Project1.dpr
+  $(DCC)
+
+Project2.exe: coversmethod\Project2.dpr
+  $(DCC)
+
+Project3.exe: userlandtime\Project3.dpr
+  $(DCC)
+
+Project4.exe: validatorarrayofstruct\Project4.dpr
+  $(DCC)
+
+

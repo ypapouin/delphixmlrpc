@@ -1,0 +1,50 @@
+object Form1: TForm1
+  Left = 142
+  Top = 163
+  Width = 441
+  Height = 296
+  VertScrollBar.Range = 289
+  HorzScrollBar.Range = 433
+  ActiveControl = Button1
+  BorderStyle = fbsDialog
+  Caption = 'Hello Server'
+  Color = clButton
+  Font.Color = clText
+  Font.Height = 11
+  Font.Name = 'MS Sans Serif'
+  Font.Pitch = fpVariable
+  Font.Style = []
+  Font.Weight = 40
+  ParentFont = False
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  PixelsPerInch = 96
+  TextHeight = 13
+  TextWidth = 6
+  object Button1: TButton
+    Left = 8
+    Top = 8
+    Width = 75
+    Height = 25
+    Caption = 'Start Server'
+    TabOrder = 0
+    OnClick = Button1Click
+  end
+  object lstMessages: TListBox
+    Left = 8
+    Top = 40
+    Width = 425
+    Height = 249
+    ItemHeight = 13
+    TabOrder = 1
+  end
+  object sedPort: TSpinEdit
+    Left = 96
+    Top = 8
+    Width = 101
+    Height = 21
+    Max = 65535
+    TabOrder = 2
+    Value = 8080
+  end
+end

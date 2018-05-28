@@ -1,0 +1,53 @@
+object Form1: TForm1
+  Left = 330
+  Top = 248
+  Width = 442
+  Height = 297
+  VertScrollBar.Range = 289
+  HorzScrollBar.Range = 433
+  ActiveControl = Button1
+  Caption = 'Form1'
+  Color = clBackground
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  PixelsPerInch = 96
+  TextHeight = 13
+  TextWidth = 6
+  object Button1: TButton
+    Left = 8
+    Top = 8
+    Width = 75
+    Height = 25
+    Caption = 'Start Server'
+    TabOrder = 0
+    OnClick = Button1Click
+  end
+  object lstMessages: TListBox
+    Left = 120
+    Top = 40
+    Width = 313
+    Height = 249
+    TabOrder = 1
+  end
+  object rgrpThreadSynch: TRadioGroup
+    Left = 0
+    Top = 40
+    Width = 113
+    Height = 89
+    Items.Strings = (
+      'None - lets risk it'
+      'Main Thread')
+    Caption = 'Thread Synch'
+    ItemIndex = 0
+    TabOrder = 2
+  end
+  object sePort: TSpinEdit
+    Left = 120
+    Top = 8
+    Width = 100
+    Height = 23
+    Max = 65535
+    TabOrder = 3
+    Value = 1025
+  end
+end
