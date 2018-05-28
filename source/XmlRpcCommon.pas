@@ -587,7 +587,7 @@ begin
   Result := StringReplace(Result, '<string> </string>',
     '<string>[NULL]</string>', [rfReplaceAll, rfIgnoreCase]);
 
-  // CLINTON 16/9/2003 - <string></string> was not compatable with XML-RPC spec.
+  // CLINTON 16/9/2003 - <string></string> was not compatible with XML-RPC spec.
   Result := StringReplace(Result,'<value></value>',
       '<value>[NULL]</value>', [rfReplaceAll, rfIgnoreCase]);
   Result := StringReplace(Result,'<value></nil></value>',
@@ -596,6 +596,12 @@ begin
       '<value>[NULL]</value>', [rfReplaceAll, rfIgnoreCase]);
   Result := StringReplace(Result,'<value> </value>',
       '<value>[NULL]</value>', [rfReplaceAll, rfIgnoreCase]);
+  Result := StringReplace(Result,'<value/>',
+      '<value>[NULL]</value>', [rfReplaceAll, rfIgnoreCase]);
+  Result := StringReplace(Result,'<data/>',
+      '<data>[NULL]</data>', [rfReplaceAll, rfIgnoreCase]);
+  Result := StringReplace(Result,'<struct/>',
+      '<struct>[NULL]</struct>', [rfReplaceAll, rfIgnoreCase]);
 end;
 
 {$IFDEF ACTIVEX}
