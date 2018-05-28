@@ -44,7 +44,7 @@ unit XmlRpcClient;
 interface
 
 uses
-  SysUtils, Classes, Contnrs, XmlRpcTypes, XmlRpcCommon,
+  SysUtils, Classes, Contnrs, XmlRpcTypes, XmlRpcCommon, XmlRpcUnicode,
   IdHTTP,
   IdSSLOpenSSL,
 {$IFDEF INDY9}
@@ -57,17 +57,17 @@ type
   TRpcClientParser = class(TObject)
   private
     FStack: TObjectStack;
-    FStructNames: TStringList;
+    FStructNames: TAnsiStringList;
     FRpcResult: IRpcResult;
     FParser: TXMLParser;
-    FLastTag: string;
+    FLastTag: AnsiString;
     FFixEmptyStrings: Boolean;
-    procedure PushStructName(const Name: string);
-    function PopStructName: string ;
+    procedure PushStructName(const Name: AnsiString);
+    function PopStructName: AnsiString ;
   public
     constructor Create;
     destructor Destroy; override;
-    procedure Parse(Data: string);
+    procedure Parse(Data: AnsiString);
     procedure StartTag;
     procedure EndTag;
     procedure DataTag;
@@ -77,44 +77,44 @@ type
 
   TRpcCaller = class(TRpcClientParser)
   private
-    FHostName: string;
+    FHostName: AnsiString;
     FHostPort: Integer;
-    FUserName: string;
-    FPassword: string;
+    FUserName: AnsiString;
+    FPassword: AnsiString;
     FBasicAuth: Boolean;
-    FProxyName: string;
+    FProxyName: AnsiString;
     FProxyPort: Integer;
-    FProxyUserName: string;
-    FProxyPassword: string;
+    FProxyUserName: AnsiString;
+    FProxyPassword: AnsiString;
     FSSLEnable: Boolean;
-    FSSLRootCertFile: string;
-    FSSLCertFile: string;
-    FSSLKeyFile: string;
-    FEndPoint: string;
+    FSSLRootCertFile: AnsiString;
+    FSSLCertFile: AnsiString;
+    FSSLKeyFile: AnsiString;
+    FEndPoint: AnsiString;
     FProxyBasicAuth: Boolean;
-    function Post(const RawData: string): string;
+    function Post(const RawData: AnsiString): AnsiString;
   public
     constructor Create;
-    property EndPoint: string read FEndPoint write FEndPoint;
-    property HostName: string read FHostName write FHostName;
+    property EndPoint: AnsiString read FEndPoint write FEndPoint;
+    property HostName: AnsiString read FHostName write FHostName;
     property HostPort: Integer read FHostPort write FHostPort;
-    property UserName: string read FUserName write FUserName;
-    property Password: string read FPassword write FPassword;
+    property UserName: AnsiString read FUserName write FUserName;
+    property Password: AnsiString read FPassword write FPassword;
     property BasicAuth: Boolean read FBasicAuth write FBasicAuth;
-    property ProxyName: string read FProxyName write FProxyName;
+    property ProxyName: AnsiString read FProxyName write FProxyName;
     property ProxyPort: Integer read FProxyPort write FProxyPort;
-    property ProxyUserName: string read FProxyUserName write FProxyUserName;
-    property ProxyPassword: string read FProxyPassword write FProxyPassword;
+    property ProxyUserName: AnsiString read FProxyUserName write FProxyUserName;
+    property ProxyPassword: AnsiString read FProxyPassword write FProxyPassword;
     property ProxyBasicAuth: Boolean read FProxyBasicAuth write FProxyBasicAuth;
     property SSLEnable: Boolean read FSSLEnable write FSSLEnable;
-    property SSLRootCertFile: string read FSSLRootCertFile write
+    property SSLRootCertFile: AnsiString read FSSLRootCertFile write
       FSSLRootCertFile;
-    property SSLCertFile: string read FSSLCertFile write FSSLCertFile;
-    property SSLKeyFile: string read FSSLKeyFile write FSSLKeyFile;
+    property SSLCertFile: AnsiString read FSSLCertFile write FSSLCertFile;
+    property SSLKeyFile: AnsiString read FSSLKeyFile write FSSLKeyFile;
 {$IFDEF INDY9}
     function Execute(RpcFunction: IRpcFunction; Ttl: Integer): IRpcResult; overload;
 {$ENDIF}
-    function Execute(const XmlRequest: string): IRpcResult; overload;
+    function Execute(const XmlRequest: AnsiString): IRpcResult; overload;
     function Execute(Value: IRpcFunction): IRpcResult; overload;
     procedure DeleteOldCache(Ttl: Integer);
   end;
@@ -148,12 +148,12 @@ end;
 
 //CLINTON 16/9/2003
 // push/pop StructName used to store prior struct member name
-procedure TRpcClientParser.PushStructName(const Name: String);
+procedure TRpcClientParser.PushStructName(const Name: AnsiString);
 begin
   FStructNames.Add(Name);
 end ;
 
-function TRpcClientParser.PopStructName: string ;
+function TRpcClientParser.PopStructName: AnsiString ;
 var 
   I: Integer ;
 begin
@@ -166,7 +166,7 @@ end ;
 { RETURN THE RESULT OBJECT  tastes great less filling ;)                       }
 {------------------------------------------------------------------------------}
 
-procedure TRpcClientParser.Parse(Data: string);
+procedure TRpcClientParser.Parse(Data: AnsiString);
 begin
   FRpcResult := TRpcResult.Create;
 
@@ -192,7 +192,7 @@ begin
     FStack := TObjectStack.Create;
   //CLINTON - 16/9/2003  
   if not Assigned(FStructNames) then  
-    FStructNames := TStringList.Create;
+    FStructNames := TAnsiStringList.Create;
 
   FRpcResult.Clear;
   FParser.LoadFromBuffer(PAnsiChar(Data));
@@ -222,10 +222,10 @@ end;
 function TRpcCaller.Execute(RpcFunction: IRpcFunction; Ttl: Integer):
     IRpcResult;
 var
-  Strings: TStrings;
-  XmlResult: string;
-  XmlRequest: string;
-  Hash: string;
+  Strings: TAnsiStrings;
+  XmlResult: AnsiString;
+  XmlRequest: AnsiString;
+  Hash: AnsiString;
   HashMessageDigest: TIdHashMessageDigest5;
 begin
   XmlRequest := RpcFunction.RequestXML;
@@ -236,7 +236,7 @@ begin
   finally
     HashMessageDigest.Free;
   end;
-  Strings := TStringList.Create;
+  Strings := TAnsiStringList.Create;
   try
     { if we have a cached file from a previous request
       that has not expired then load it }
@@ -281,9 +281,9 @@ end;
 { NON - CACHED WEB CALL with XML string parameter                                                     }
 {------------------------------------------------------------------------------}
 
-function TRpcCaller.Execute(const XmlRequest: string): IRpcResult;
+function TRpcCaller.Execute(const XmlRequest: AnsiString): IRpcResult;
 var
-  XmlResponse: string;
+  XmlResponse: AnsiString;
 begin
   XmlResponse := Post(XmlRequest);
   Parse(XmlResponse);
@@ -313,7 +313,7 @@ end;
 { POST THE REQUEST TO THE RPC SERVER                                           }
 {------------------------------------------------------------------------------}
 
-function TRpcCaller.Post(const RawData: string): string;
+function TRpcCaller.Post(const RawData: AnsiString): AnsiString;
 var
   SendStream: TStream;
   ResponseStream: TStream;
@@ -402,7 +402,7 @@ end;
 
 procedure TRpcClientParser.DataTag;
 var
-  Data: string;
+  Data: AnsiString;
 begin
   Data := FParser.CurContent;
   { should never be empty }
@@ -502,9 +502,9 @@ procedure TRpcClientParser.EndTag;
 var
   RpcStruct: TRpcStruct;
   RpcArray: TRpcArray;
-  Tag: string;
+  Tag: AnsiString;
 begin
-  Tag := UpperCase(Trim(string(FParser.CurName)));
+  Tag := UpperCase(Trim(AnsiString(FParser.CurName)));
 
   {if we get a struct closure then
    we pop it off the stack do a peek on
@@ -586,11 +586,11 @@ end;
 
 procedure TRpcClientParser.StartTag;
 var
-  Tag: string;
+  Tag: AnsiString;
   RpcStruct: TRpcStruct;
   RpcArray: TRpcArray;
 begin
-  Tag := UpperCase(Trim(string(FParser.CurName)));
+  Tag := UpperCase(Trim(AnsiString(FParser.CurName)));
 
   if (Tag = 'STRUCT') then
   begin
