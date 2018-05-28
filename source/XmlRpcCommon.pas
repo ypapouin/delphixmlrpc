@@ -4,7 +4,7 @@
 { XML-RPC Library for Delphi, Kylix and DWPL (DXmlRpc)  }
 { XmlRpcCommon.pas                                      }
 {                                                       }
-{ for Delphi 6, 7                                       }
+{ for Delphi 6, 7, XE                                   }
 { Release 2.0.0                                         }
 { Copyright (c) 2001-2003 by Team-DelphiXml-Rpc         }
 { e-mail: team-dxmlrpc@dwp42.org                        }
