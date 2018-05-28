@@ -21,7 +21,7 @@
 {                                                       }
 {*******************************************************}
 {
-  $Header: /cvsroot/delphixml-rpc/dxmlrpc/source/XmlRpcClient.pas,v 1.2 2004/04/20 20:35:51 iwache Exp $
+  $Header: /cvsroot-fuse/delphixml-rpc/dxmlrpc/source/XmlRpcClient.pas,v 1.2 2004/04/20 20:35:51 iwache Exp $
   ----------------------------------------------------------------------------
 
   $Log: XmlRpcClient.pas,v $
@@ -39,9 +39,9 @@
 }
 unit XmlRpcClient;
 
-interface
-
 {$INCLUDE 'indy.inc'}
+
+interface
 
 uses
   SysUtils, Classes, Contnrs, XmlRpcTypes, XmlRpcCommon,
@@ -127,10 +127,6 @@ const
     'Invalid payload received from xml-rpc server';
 
 implementation
-uses
-{$IFDEF WIN32}
-  Windows;
-{$ENDIF}
 
 {------------------------------------------------------------------------------}
 { RPC PARSER CONSTRUCTOR                                                       }
@@ -199,7 +195,7 @@ begin
     FStructNames := TStringList.Create;
 
   FRpcResult.Clear;
-  FParser.LoadFromBuffer(PChar(Data));
+  FParser.LoadFromBuffer(PAnsiChar(Data));
   FParser.StartScan;
   FParser.Normalize := False;
   while FParser.Scan do
@@ -307,9 +303,9 @@ begin
     repeat
       if (SearchRec.Attr and faDirectory = 0) then
         if FileIsExpired(GetTempDir + SearchRec.Name, Ttl) then
-          SysUtils.DeleteFile(GetTempDir + SearchRec.Name);
+          DeleteFile(GetTempDir + SearchRec.Name);
     until FindNext(SearchRec) <> 0;
-    SysUtils.FindClose(SearchRec);
+    FindClose(SearchRec);
   end;
 end;
 
@@ -322,12 +318,7 @@ var
   SendStream: TStream;
   ResponseStream: TStream;
   Session: TIdHttp;
-{$IFDEF INDY9}
-  IdSSLIOHandlerSocket: TIdSSLIOHandlerSocket;
-{$ENDIF}
-{$IFDEF INDY10}
-  IdSSLIOHandlerSocket : TIdSSLIOHandlerSocketOpenSSL;
-{$ENDIF}
+  IdSSLIOHandlerSocket: TIdSSLIOHandlerSocketOpenSSL;
 begin
   SendStream := nil;
   ResponseStream := nil;
@@ -342,12 +333,7 @@ begin
       IdSSLIOHandlerSocket := nil;
       if (FSSLEnable) then
       begin
-        {$IFDEF INDY9}
-        IdSSLIOHandlerSocket := TIdSSLIOHandlerSocket.Create(nil);
-        {$ENDIF}
-        {$IFDEF INDY10}
         IdSSLIOHandlerSocket := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
-        {$ENDIF}
         IdSSLIOHandlerSocket.SSLOptions.RootCertFile := FSSLRootCertFile;
         IdSSLIOHandlerSocket.SSLOptions.CertFile := FSSLCertFile;
         IdSSLIOHandlerSocket.SSLOptions.KeyFile := FSSLKeyFile;
