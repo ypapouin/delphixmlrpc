@@ -78,11 +78,11 @@ type
       Integer);
     procedure RC4Reset(var Data: TRC4Data);
   public
-    constructor Create(const EncryptionKey: AnsiString);
+    constructor Create(const EncryptionKey: TXmlString);
     procedure EncryptStream(InStream, OutStream: TMemoryStream);
-    function EncryptString(const Value: AnsiString): AnsiString;
+    function EncryptString(const Value: TXmlString): TXmlString;
     procedure DecryptStream(InStream, OutStream: TMemoryStream);
-    function DecryptString(const Value: AnsiString): AnsiString;
+    function DecryptString(const Value: TXmlString): TXmlString;
     procedure BurnKey;
   end;
 
@@ -90,45 +90,45 @@ type
   TRPCDataType = (rpNone, rpString, rpInteger, rpBoolean, rpDouble,
     rpDate, rpBase64, rpStruct, rpArray, rpName, rpError);
 
-function GetTempDir: AnsiString;
+function GetTempDir: TXmlString;
 
-function FileIsExpired(const FileName: AnsiString; Elapsed: Integer): Boolean;
+function FileIsExpired(const FileName: TXmlString; Elapsed: Integer): Boolean;
 
-function EncodeEntities(const Data: AnsiString): AnsiString;
+function EncodeEntities(const Data: TXmlString): TXmlString;
 
-function DecodeEntities(const Data: AnsiString): AnsiString;
+function DecodeEntities(const Data: TXmlString): TXmlString;
 
-function Replace(const Data: AnsiString; const Find: AnsiString;
-  const Replace: AnsiString): AnsiString;
+function Replace(const Data: TXmlString; const Find: TXmlString;
+  const Replace: TXmlString): TXmlString;
 
-function InStr(Start: Integer; const Data: AnsiString;
-  const Find: AnsiString): Integer;
+function InStr(Start: Integer; const Data: TXmlString;
+  const Find: TXmlString): Integer;
 
-function Mid(const Data: AnsiString; Start: Integer): AnsiString;
+function Mid(const Data: TXmlString; Start: Integer): TXmlString;
 
-function DateTimeToISO(ConvertDate: TDateTime): AnsiString;
+function DateTimeToISO(ConvertDate: TDateTime): TXmlString;
 
-function IsoToDateTime(const ISOStringDate: AnsiString): TDateTime;
+function IsoToDateTime(const ISOStringDate: TXmlString): TDateTime;
 
-function FloatToRpcStr(Value: Double): AnsiString;
+function FloatToRpcStr(Value: Double): TXmlString;
 
-function RpcStrToFloat(Value: AnsiString): Double;
+function RpcStrToFloat(Value: TXmlString): Double;
 
-function ParseString(const SearchString: AnsiString; Delimiter: AnsiChar;
-  Substrings: TStrings; const AllowEmptyStrings: Boolean = False;
+function ParseString(const SearchString: TXmlString; Delimiter: TXmlChar;
+  Substrings: TXmlStrings; const AllowEmptyStrings: Boolean = False;
   ClearBeforeParse: Boolean = False): Integer;
 
-function ParseStream(SearchStream: TStream; Delimiter: AnsiChar;
-  Substrings: TStrings; AllowEmptyStrings: Boolean = False;
+function ParseStream(SearchStream: TStream; Delimiter: TXmlChar;
+  Substrings: TXmlStrings; AllowEmptyStrings: Boolean = False;
   ClearBeforeParse: Boolean = False): Integer;
 
-function FixEmptyString(const Value: AnsiString): AnsiString;
+function FixEmptyString(const Value: TXmlString): TXmlString;
 
-function URLEncode(const Value: AnsiString): AnsiString;
+function URLEncode(const Value: TXmlString): TXmlString;
 
-function StreamToString(Stream: TStream): AnsiString;
+function StreamToString(Stream: TStream): TXmlString;
 
-procedure StringToStream(const Text: AnsiString; Stream: TStream);
+procedure StringToStream(const Text: TXmlString; Stream: TStream);
 
 {$IFDEF ACTIVEX}
 function StreamToVariant(Stream: TStream): OleVariant;
@@ -137,7 +137,7 @@ procedure VariantToStream(V: OleVariant; Stream: TStream);
 {$ENDIF}
 
 {$IFDEF INDY9}
-function Hash128AsHex(const Hash128Value: T4x4LongWordRecord): AnsiString;
+function Hash128AsHex(const Hash128Value: T4x4LongWordRecord): TXmlString;
 {$ENDIF}
 
 const
@@ -147,7 +147,7 @@ implementation
 
 {------------------------------------------------------------------------------}
 
-function URLEncode(const Value: AnsiString): AnsiString;
+function URLEncode(const Value: TXmlString): TXmlString;
 var
   I: Integer;
 begin
@@ -171,7 +171,7 @@ end;
 
 {------------------------------------------------------------------------------}
 
-function EncodeEntities(const Data: AnsiString): AnsiString;
+function EncodeEntities(const Data: TXmlString): TXmlString;
 begin
   Result := StringReplace(Data, '&', '&amp;', [rfReplaceAll]);
   Result := StringReplace(Result, '<', '&lt;', [rfReplaceAll]);
@@ -182,7 +182,7 @@ end;
 
 {------------------------------------------------------------------------------}
 
-function DecodeEntities(const Data: AnsiString): AnsiString;
+function DecodeEntities(const Data: TXmlString): TXmlString;
 begin
   Result := StringReplace(Data, '&lt;', '<', [rfReplaceAll]);
   Result := StringReplace(Result, '&gt;', '>', [rfReplaceAll]);
@@ -195,13 +195,13 @@ end;
 { String Parsing Routine                                                       }
 {------------------------------------------------------------------------------}
 
-function ParseString(const SearchString: AnsiString; Delimiter: AnsiChar; Substrings:
-    TStrings; const AllowEmptyStrings: Boolean = False; ClearBeforeParse: 
+function ParseString(const SearchString: TXmlString; Delimiter: TXmlChar; Substrings:
+    TXmlStrings; const AllowEmptyStrings: Boolean = False; ClearBeforeParse:
     Boolean = False): Integer;
 var
   Index: Integer;
   PrevCount: Integer;
-  TempStr: AnsiString;
+  TempStr: TXmlString;
 begin
   if (ClearBeforeParse) then
     Substrings.Clear;
@@ -226,8 +226,8 @@ end;
 { stream parser                                                                }
 {------------------------------------------------------------------------------}
 
-function ParseStream(SearchStream: TStream; Delimiter: AnsiChar; Substrings:
-    TStrings; AllowEmptyStrings: Boolean = False; ClearBeforeParse: Boolean =
+function ParseStream(SearchStream: TStream; Delimiter: TXmlChar; Substrings:
+    TXmlStrings; AllowEmptyStrings: Boolean = False; ClearBeforeParse: Boolean =
     False): Integer;
 begin
   Result := ParseString(StreamToString(SearchStream), Delimiter, Substrings,
@@ -235,10 +235,10 @@ begin
 end;
 
 {------------------------------------------------------------------------------}
-{ convert stream to a AnsiString                                                   }
+{ convert stream to a TXmlString                                                   }
 {------------------------------------------------------------------------------}
 
-function StreamToString(Stream: TStream): AnsiString;
+function StreamToString(Stream: TStream): TXmlString;
 begin
   Result := '';
   Stream.Seek(0, soFromBeginning);
@@ -247,10 +247,10 @@ begin
 end;
 
 {------------------------------------------------------------------------------}
-{  Converts a AnsiString to a stream                                               }
+{  Converts a TXmlString to a stream                                               }
 {------------------------------------------------------------------------------}
 
-procedure StringToStream(const Text: AnsiString; Stream: TStream);
+procedure StringToStream(const Text: TXmlString; Stream: TStream);
 begin
   Stream.Write(Text[1], Length(Text));
 end;
@@ -259,7 +259,7 @@ end;
 {  Converts a date time to iso 8601 format                                     }
 {------------------------------------------------------------------------------}
 
-function DateTimeToISO(ConvertDate: TDateTime): AnsiString;
+function DateTimeToISO(ConvertDate: TDateTime): TXmlString;
 begin
   Result := FormatDateTime('yyyymmdd"T"hh:mm:ss', ConvertDate);
 end;
@@ -268,9 +268,9 @@ end;
 {  Converts a ISO 8601 data to TDateTime                                       }
 {------------------------------------------------------------------------------}
 
-function IsoToDateTime(const ISOStringDate: AnsiString): TDateTime;
+function IsoToDateTime(const ISOStringDate: TXmlString): TDateTime;
 var
-  ISOString: AnsiString;
+  ISOString: TXmlString;
 begin
   ISOString := ISOStringDate;
 
@@ -288,9 +288,9 @@ begin
 end;
 
 const
-  RpcDecimalSeparator = AnsiChar('.');
+  RpcDecimalSeparator = TXmlChar('.');
 
-function SubstDecSep(DblValue: AnsiString; RemDecSep, AddDecSep: AnsiChar): AnsiString;
+function SubstDecSep(DblValue: TXmlString; RemDecSep, AddDecSep: TXmlChar): TXmlString;
 var
   DecPos: Integer;
 begin
@@ -301,40 +301,38 @@ begin
 end;
 
 {------------------------------------------------------------------------------}
-{  Converts a float value into a XML-RPC AnsiString                                }
+{  Converts a float value into a XML-RPC TXmlString                                }
 {------------------------------------------------------------------------------}
 
-function FloatToRpcStr(Value: Double): AnsiString;
+function FloatToRpcStr(Value: Double): TXmlString;
 begin
-  Result := SubstDecSep(FloatToStr(Value), AnsiChar(DecimalSeparator),
-      RpcDecimalSeparator);
+  Result := SubstDecSep(FloatToStr(Value), TXmlChar(DecimalSeparator), RpcDecimalSeparator);
 end;
 
 {------------------------------------------------------------------------------}
-{  Converts a XML-RPC AnsiString into a float value                                }
+{  Converts a XML-RPC TXmlString into a float value                                }
 {------------------------------------------------------------------------------}
 
-function RpcStrToFloat(Value: AnsiString): Double;
+function RpcStrToFloat(Value: TXmlString): Double;
 begin
-  Result := StrToFloat(SubstDecSep(Value, (RpcDecimalSeparator),
-      AnsiChar(DecimalSeparator)));
+  Result := StrToFloat(SubstDecSep(Value, (RpcDecimalSeparator), TXmlChar(DecimalSeparator)));
 end;
 
 {------------------------------------------------------------------------------}
-{  Returns part of a AnsiString                                                    }
+{  Returns part of a TXmlString                                                    }
 {------------------------------------------------------------------------------}
 
-function Mid(const Data: AnsiString; Start: Integer): AnsiString;
+function Mid(const Data: TXmlString; Start: Integer): TXmlString;
 begin
   Result := Copy(Data, Start, Length(Data) - (Start - 1));
 end;
 
 {------------------------------------------------------------------------------}
-{  Find position of AnsiString in sub AnsiString                                       }
+{  Find position of TXmlString in sub TXmlString                                       }
 {------------------------------------------------------------------------------}
 
-function InStr(Start: Integer; const Data: AnsiString; const
-  Find: AnsiString): Integer;
+function InStr(Start: Integer; const Data: TXmlString; const
+  Find: TXmlString): Integer;
 var
   C: Integer;
 label
@@ -354,14 +352,14 @@ begin
 end;
 
 {------------------------------------------------------------------------------}
-{  replace item in AnsiString                                                      }
+{  replace item in TXmlString                                                      }
 {------------------------------------------------------------------------------}
 
-function Replace(const Data: AnsiString; const Find: AnsiString;
-  const Replace: AnsiString): AnsiString;
+function Replace(const Data: TXmlString; const Find: TXmlString;
+  const Replace: TXmlString): TXmlString;
 var
   C: Integer;
-  Temp, Temp2: AnsiString;
+  Temp, Temp2: TXmlString;
 begin
   Temp := Data;
   C := InStr(1, Temp, Find);
@@ -465,10 +463,10 @@ begin
 end;
 
 {------------------------------------------------------------------------------}
-{Secrypt a AnsiString value                                                        }
+{Secrypt a TXmlString value                                                        }
 {------------------------------------------------------------------------------}
 
-function TRC4.DecryptString(const Value: AnsiString): AnsiString;
+function TRC4.DecryptString(const Value: TXmlString): TXmlString;
 begin
   SetLength(Result, Length(Value));
   RC4Crypt(FData, PByteArray(Value), PByteArray(Result), Length(Result));
@@ -486,10 +484,10 @@ begin
 end;
 
 {------------------------------------------------------------------------------}
-{Encrypt a AnsiString value                                                        }
+{Encrypt a TXmlString value                                                        }
 {------------------------------------------------------------------------------}
 
-function TRC4.EncryptString(const Value: AnsiString): AnsiString;
+function TRC4.EncryptString(const Value: TXmlString): TXmlString;
 begin
   SetLength(Result, Length(Value));
   RC4Crypt(FData, PByteArray(Value), PByteArray(Result), Length(Result));
@@ -499,7 +497,7 @@ end;
 
 {------------------------------------------------------------------------------}
 
-constructor TRC4.Create(const EncryptionKey: AnsiString);
+constructor TRC4.Create(const EncryptionKey: TXmlString);
 begin
   {initialize encryption engine}
   RC4Init(FData, PByteArray(EncryptionKey), Length(EncryptionKey));
@@ -508,7 +506,7 @@ end;
 {------------------------------------------------------------------------------}
 //check a file to see if the elapsed time is expired
 
-function FileIsExpired(const FileName: AnsiString; Elapsed: Integer): Boolean;
+function FileIsExpired(const FileName: TXmlString; Elapsed: Integer): Boolean;
 var
   FHandle: Integer;
   FDate: TDateTime;
@@ -533,7 +531,7 @@ end;
 
 {------------------------------------------------------------------------------}
 
-function GetTempDir: AnsiString;
+function GetTempDir: TXmlString;
 {$IFDEF WIN32}
 var
   Buf: array[0..MAX_PATH] of Char;
@@ -553,7 +551,7 @@ end;
 {------------------------------------------------------------------------------}
 {$IFDEF INDY9}
 
-function Hash128AsHex(const Hash128Value: T4x4LongWordRecord): AnsiString;
+function Hash128AsHex(const Hash128Value: T4x4LongWordRecord): TXmlString;
 begin
   Result := IntToHex(Hash128Value[0], 4) +
     IntToHex(Hash128Value[1], 4) +
@@ -564,7 +562,7 @@ end;
 {$ENDIF}
 {------------------------------------------------------------------------------}
 
-function FixEmptyString(const Value: AnsiString): AnsiString;
+function FixEmptyString(const Value: TXmlString): TXmlString;
 begin
   Result := StringReplace(Value, '<string></string>', '<string>[NULL]</string>',
     [rfReplaceAll, rfIgnoreCase]);
