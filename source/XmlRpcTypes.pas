@@ -786,9 +786,30 @@ begin
 end;
 
 procedure TRpcResult.SetAsStruct(Value: IRpcStruct);
+var
+  faultCode: Integer;
+  faultString: String;
 begin
   if Value.KeyExists('faultCode') then
-    SetError(Value['faultCode'].AsInteger, Value['faultString'].AsString)
+  begin
+    if Value.Keys['faultCode'].IsInteger then
+      faultCode := Value['faultCode'].AsInteger
+    else
+      faultCode := -1;
+
+    if Value.Keys['faultCode'].IsString then
+      faultString := Value['faultCode'].AsString
+    else
+      faultString := '';
+
+    if Value.KeyExists('faultString') then
+    begin
+      if Value.Keys['faultString'].IsString then
+        faultString := faultString + #10#13 + Value['faultString'].AsString;
+    end;
+
+    SetError(faultCode, faultString);
+  end
   else
     inherited SetAsStruct(Value);
 end;
