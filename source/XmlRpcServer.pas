@@ -444,7 +444,7 @@ begin
       end;
 
       for Index := 0 to FMethodList.Count - 1 do
-        if (TRpcMethodHandler(FMethodList[Index]).Name = RequestName) then
+        if SameText(TRpcMethodHandler(FMethodList[Index]).Name, RequestName) then
         begin
           TRpcMethodHandler(FMethodList[Index]).Method(Thread,
               TRpcMethodHandler(FMethodList[Index]).Name, List, RpcReturn);
