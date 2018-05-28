@@ -946,7 +946,7 @@ begin
     begin
       case Items[Index].DataType of
         dtString: Strings.Add('      <value><string>' +
-            Items[Index].AsString +
+            Items[Index].AsRawString +
             '</string></value>');
         dtInteger: Strings.Add('      <value><int>' +
             IntToStr(Items[Index].AsInteger) +
