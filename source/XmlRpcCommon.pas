@@ -55,8 +55,11 @@ uses
   SysUtils,
   XmlRpcUnicode,
   Classes
+{$IFDEF INDY10}
+  ,IdHashMessageDigest
+{$ENDIF}
 {$IFDEF INDY9}
-  , IdHashMessageDigest, IdHash
+  , IdHash
 {$ENDIF}
 {$IFDEF ACTIVEX}
   , Variants
@@ -136,8 +139,11 @@ function StreamToVariant(Stream: TStream): OleVariant;
 procedure VariantToStream(V: OleVariant; Stream: TStream);
 {$ENDIF}
 
-{$IFDEF INDY9}
-function Hash128AsHex(const Hash128Value: T4x4LongWordRecord): TXmlString;
+
+{$IFDEF INDY10}
+function HashStringMD5AsHex(const AStr: WideString): string;
+{$ELSE}
+function Hash128AsHex(const Hash128Value: T4x4LongWordRecord): string;
 {$ENDIF}
 
 const
@@ -549,16 +555,24 @@ begin
 end;
 
 {------------------------------------------------------------------------------}
-{$IFDEF INDY9}
-
-function Hash128AsHex(const Hash128Value: T4x4LongWordRecord): TXmlString;
+{$IFDEF INDY10}
+function HashStringMD5AsHex(const AStr: WideString): string;
+begin
+  with TIdHashMessageDigest5.Create do
+  try
+    Result := LowerCase(HashStringAsHex(string(AStr)));
+  finally
+    Free;
+  end;
+end;
+{$ELSE}
+function Hash128AsHex(const Hash128Value: T4x4LongWordRecord): string;
 begin
   Result := IntToHex(Hash128Value[0], 4) +
     IntToHex(Hash128Value[1], 4) +
     IntToHex(Hash128Value[2], 4) +
     IntToHex(Hash128Value[3], 4);
 end;
-
 {$ENDIF}
 {------------------------------------------------------------------------------}
 

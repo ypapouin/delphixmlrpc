@@ -261,7 +261,11 @@ begin
   HashMessageDigest := TIdHashMessageDigest5.Create;
   try
     { determine the md5 digest hash of the request }
-    Hash := HashMessageDigest.HashStringAsHex(XmlRequest);
+    {$IFDEF INDY10}
+    Hash := HashStringMD5AsHex(XmlRequest);
+    {$ELSE}
+    Hash := Hash128AsHex(HashMessageDigest.HashValue(XmlRequest));
+    {$ENDIF}
   finally
     HashMessageDigest.Free;
   end;
