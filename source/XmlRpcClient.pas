@@ -39,9 +39,9 @@
 }
 unit XmlRpcClient;
 
-{$INCLUDE 'indy.inc'}
-
 interface
+
+{$INCLUDE 'indy.inc'}
 
 uses
   SysUtils, Classes, Contnrs, XmlRpcTypes, XmlRpcCommon, XmlRpcUnicode,
@@ -51,7 +51,7 @@ uses
   IdHashMessageDigest,
   IdHash,
 {$ENDIF}
-
+  IdComponent,
   LibXmlParser;
 
 type
@@ -93,6 +93,12 @@ type
     FSSLKeyFile: TXmlString;
     FEndPoint: TXmlString;
     FProxyBasicAuth: Boolean;
+    FOnWork: TWorkEvent;
+    FOnWorkBegin: TWorkBeginEvent;
+    FOnWorkEnd: TWorkEndEvent;
+    procedure DoWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Integer);
+    procedure DoWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Integer);
+    procedure DoWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
   protected
     FSession: TIdHTTP;
     function Post(const RawData: TXmlString): TXmlString; virtual;
@@ -115,6 +121,9 @@ type
       FSSLRootCertFile;
     property SSLCertFile: TXmlString read FSSLCertFile write FSSLCertFile;
     property SSLKeyFile: TXmlString read FSSLKeyFile write FSSLKeyFile;
+    property OnWork: TWorkEvent read FOnWork write FOnWork;
+    property OnWorkBegin: TWorkBeginEvent read FOnWorkBegin write FOnWorkBegin;
+    property OnWorkEnd: TWorkEndEvent read FOnWorkEnd write FOnWorkEnd;
 {$IFDEF INDY9}
     function Execute(RpcFunction: IRpcFunction; Ttl: Integer): IRpcResult; overload;
 {$ENDIF}
@@ -131,6 +140,11 @@ const
     'Invalid payload received from xml-rpc server';
 
 implementation
+
+uses
+{$IFDEF WIN32}
+  Windows;
+{$ENDIF}
 
 {------------------------------------------------------------------------------}
 { RPC PARSER CONSTRUCTOR                                                       }
@@ -312,6 +326,25 @@ begin
   end;
 end;
 
+procedure TRpcCaller.DoWork(ASender: TObject; AWorkMode: TWorkMode;
+  AWorkCount: Integer);
+begin
+  if Assigned(OnWork) then
+    OnWork(Self, AWorkMode, AWorkCount);
+end;
+
+procedure TRpcCaller.DoWorkBegin(ASender: TObject; AWorkMode: TWorkMode;
+  AWorkCountMax: Integer);
+begin
+  if Assigned(OnWorkBegin) then
+    OnWorkBegin(Self, AWorkMode, AWorkCountMax);
+end;
+
+procedure TRpcCaller.DoWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
+begin
+  if Assigned(OnWorkEnd) then
+    OnWorkEnd(Self, AWorkMode);
+end;
 
 {------------------------------------------------------------------------------}
 { POST THE REQUEST TO THE RPC SERVER                                           }
@@ -335,6 +368,9 @@ begin
     StringToStream(RawDataFix, SendStream); { convert to a stream }
     SendStream.Position := 0;
     Session := TIdHttp.Create(nil);
+    Session.OnWork := DoWork;
+    Session.OnWorkBegin := DoWorkBegin;
+    Session.OnWorkEnd := DoWorkEnd;
 
     try
       IdSSLIOHandlerSocket := nil;
