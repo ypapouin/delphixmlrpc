@@ -132,9 +132,6 @@ const
 
 implementation
 
-uses
-  App.Debug;
-
 {------------------------------------------------------------------------------}
 { RPC PARSER CONSTRUCTOR                                                       }
 {------------------------------------------------------------------------------}
@@ -239,7 +236,6 @@ begin
   HashMessageDigest := TIdHashMessageDigest5.Create;
   try
     { determine the md5 digest hash of the request }
-    //Hash := Hash128AsHex(HashMessageDigest.HashValue(XmlRequest));
     Hash := HashMessageDigest.HashStringAsHex(XmlRequest);
   finally
     HashMessageDigest.Free;
@@ -329,7 +325,6 @@ var
   IdSSLIOHandlerSocket: TIdSSLIOHandlerSocketOpenSSL;
   RawDataFix: string;
 begin
-  DebugProcedure('Begin');
   SendStream := nil;
   ResponseStream := nil;
   IdSSLIOHandlerSocket := nil;
@@ -340,9 +335,6 @@ begin
     StringToStream(RawDataFix, SendStream); { convert to a stream }
     SendStream.Position := 0;
     Session := TIdHttp.Create(nil);
-
-   // Session.ReadTimeout := 100;
-   // Session.ConnectTimeout := 1000;
 
     try
       IdSSLIOHandlerSocket := nil;
@@ -404,7 +396,6 @@ begin
     SendStream.Free;
   end;
 
-  DebugProcedure('End');
 end;
 
 
