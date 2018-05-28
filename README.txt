@@ -24,7 +24,9 @@ The initial developer of the package is:
   S. R. Oddson,
   Patrick Martin,
   Avi Lewin,
-  Immo Wache, immo.wache@dwp42.org
+  Alessio Pollero (alessio.pollero@yandex.com),
+  Immo Wache (immo.wache@dwp42.org),
+  Yann Papouin (yann.papouin at gmail.com)
 
 
 3. Bugs and feature requests
@@ -72,6 +74,12 @@ Check the examples in xmlrpc\demos and xmlrpc\tests.
 For native Delphi Windows mode and Kylix you must
 install the latest INDY components to compile!
   http://www.nevrona.com/Indy/
+
+Note that unless installed by hand in Delphi7, Kylix3
+the builtin INDY version is 9 while for newer versions
+of Delphi(like XE) the builtin version is 10, 
+so make sure that in the indy.inc file you have defined 
+the right version of INDY based on your environment.
 
 For DWPL Delphi WDOSX for DOS mode you need the 
 latest DWPL library from
