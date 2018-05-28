@@ -25,8 +25,7 @@ The initial developer of the package is:
   Patrick Martin,
   Avi Lewin,
   Alessio Pollero (alessio.pollero@yandex.com),
-  Immo Wache (immo.wache@dwp42.org),
-  Yann Papouin (yann.papouin at gmail.com)
+  Immo Wache (immo.wache@dwp42.org)
 
 
 3. Bugs and feature requests
@@ -85,6 +84,10 @@ For DWPL Delphi WDOSX for DOS mode you need the
 latest DWPL library from
   http://www.dwp42.org
 
+To install on Lazarus, the Indy10 Lazarus/FPC port
+is required, for more information : 
+  http://www.indyproject.org/sockets/fpc/
+and then install dxmlrpc.lpk package.
 
 7. Change Log (from 2.0.0)
 --------------------------

@@ -1,0 +1,25 @@
+object Form1: TForm1
+  Left = 290
+  Height = 178
+  Top = 192
+  Width = 337
+  Caption = 'Hello Server'
+  ClientHeight = 178
+  ClientWidth = 337
+  Color = clBtnFace
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  LCLVersion = '1.1'
+  object Button1: TButton
+    Left = 80
+    Height = 25
+    Top = 24
+    Width = 105
+    Caption = 'Start Server'
+    OnClick = Button1Click
+    TabOrder = 0
+  end
+end

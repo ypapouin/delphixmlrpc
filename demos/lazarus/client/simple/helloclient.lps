@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="9"/>
+    <BuildModes Active="Default"/>
+    <Units Count="6">
+      <Unit0>
+        <Filename Value="helloclient.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="3"/>
+        <CursorPos X="49" Y="18"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="Hello.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Hello"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="71"/>
+        <CursorPos X="31" Y="84"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="..\..\..\..\source\XmlRpcTypes.pas"/>
+        <UnitName Value="XmlRpcTypes"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="618"/>
+        <CursorPos X="1" Y="638"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="C:\codetyphon\lazarus\lcl\include\control.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="2766"/>
+        <CursorPos X="55" Y="2757"/>
+        <UsageCount Value="10"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\..\..\..\source\XmlRpcCommon.pas"/>
+        <UnitName Value="XmlRpcCommon"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="159"/>
+        <CursorPos X="4" Y="37"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\..\server\simple\Main.pas"/>
+        <UnitName Value="Main"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="81"/>
+        <CursorPos X="34" Y="90"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit5>
+    </Units>
+    <General>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="..\..\..\..\source\XmlRpcTypes.pas"/>
+        <Caret Line="694" Column="1" TopLine="676"/>
+      </Position1>
+      <Position2>
+        <Filename Value="Hello.pas"/>
+        <Caret Line="95" Column="1" TopLine="75"/>
+      </Position2>
+      <Position3>
+        <Filename Value="Hello.pas"/>
+        <Caret Line="91" Column="1" TopLine="75"/>
+      </Position3>
+      <Position4>
+        <Filename Value="Hello.pas"/>
+        <Caret Line="92" Column="1" TopLine="75"/>
+      </Position4>
+      <Position5>
+        <Filename Value="..\..\..\..\source\XmlRpcTypes.pas"/>
+        <Caret Line="1093" Column="1" TopLine="1077"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\..\..\..\source\XmlRpcTypes.pas"/>
+        <Caret Line="1094" Column="1" TopLine="1077"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\..\..\..\source\XmlRpcTypes.pas"/>
+        <Caret Line="1095" Column="1" TopLine="1077"/>
+      </Position7>
+      <Position8>
+        <Filename Value="Hello.pas"/>
+        <Caret Line="93" Column="1" TopLine="75"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\..\..\..\source\XmlRpcTypes.pas"/>
+        <Caret Line="692" Column="1" TopLine="676"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\..\..\..\source\XmlRpcTypes.pas"/>
+        <Caret Line="693" Column="1" TopLine="676"/>
+      </Position10>
+      <Position11>
+        <Filename Value="..\..\..\..\source\XmlRpcTypes.pas"/>
+        <Caret Line="694" Column="1" TopLine="676"/>
+      </Position11>
+      <Position12>
+        <Filename Value="Hello.pas"/>
+        <Caret Line="95" Column="1" TopLine="75"/>
+      </Position12>
+      <Position13>
+        <Filename Value="Hello.pas"/>
+        <Caret Line="96" Column="1" TopLine="75"/>
+      </Position13>
+      <Position14>
+        <Filename Value="..\..\..\..\source\XmlRpcTypes.pas"/>
+        <Caret Line="649" Column="1" TopLine="633"/>
+      </Position14>
+      <Position15>
+        <Filename Value="..\..\..\..\source\XmlRpcTypes.pas"/>
+        <Caret Line="650" Column="1" TopLine="633"/>
+      </Position15>
+      <Position16>
+        <Filename Value="..\..\..\..\source\XmlRpcTypes.pas"/>
+        <Caret Line="651" Column="1" TopLine="633"/>
+      </Position16>
+      <Position17>
+        <Filename Value="Hello.pas"/>
+        <Caret Line="97" Column="46" TopLine="75"/>
+      </Position17>
+      <Position18>
+        <Filename Value="..\..\..\..\source\XmlRpcTypes.pas"/>
+        <Caret Line="625" Column="1" TopLine="609"/>
+      </Position18>
+      <Position19>
+        <Filename Value="..\..\..\..\source\XmlRpcTypes.pas"/>
+        <Caret Line="626" Column="1" TopLine="609"/>
+      </Position19>
+      <Position20>
+        <Filename Value="..\..\..\..\source\XmlRpcTypes.pas"/>
+        <Caret Line="627" Column="1" TopLine="609"/>
+      </Position20>
+      <Position21>
+        <Filename Value="..\..\..\..\source\XmlRpcTypes.pas"/>
+        <Caret Line="630" Column="1" TopLine="614"/>
+      </Position21>
+      <Position22>
+        <Filename Value="Hello.pas"/>
+        <Caret Line="98" Column="1" TopLine="75"/>
+      </Position22>
+      <Position23>
+        <Filename Value="..\..\..\..\source\XmlRpcTypes.pas"/>
+        <Caret Line="633" Column="1" TopLine="614"/>
+      </Position23>
+      <Position24>
+        <Filename Value="..\..\..\..\source\XmlRpcTypes.pas"/>
+        <Caret Line="634" Column="1" TopLine="614"/>
+      </Position24>
+      <Position25>
+        <Filename Value="..\..\..\..\source\XmlRpcTypes.pas"/>
+        <Caret Line="635" Column="1" TopLine="614"/>
+      </Position25>
+      <Position26>
+        <Filename Value="..\..\..\..\source\XmlRpcTypes.pas"/>
+        <Caret Line="638" Column="1" TopLine="614"/>
+      </Position26>
+      <Position27>
+        <Filename Value="Hello.pas"/>
+        <Caret Line="102" Column="1" TopLine="76"/>
+      </Position27>
+      <Position28>
+        <Filename Value="Hello.pas"/>
+        <Caret Line="104" Column="1" TopLine="76"/>
+      </Position28>
+      <Position29>
+        <Filename Value="Hello.pas"/>
+        <Caret Line="82" Column="28" TopLine="1"/>
+      </Position29>
+      <Position30>
+        <Filename Value="..\..\..\..\source\XmlRpcCommon.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectSession>
+  <Debugging>
+    <BreakPoints Count="1">
+      <Item1>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\..\server\simple\Main.pas"/>
+        <Line Value="68"/>
+      </Item1>
+    </BreakPoints>
+  </Debugging>
+  <EditorMacros Count="0"/>
+</CONFIG>

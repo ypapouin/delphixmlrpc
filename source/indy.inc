@@ -1,10 +1,15 @@
-{$IF CompilerVersion > 21}
+{$IFDEF FPC}
   {$UNDEF INDY9}
   {$DEFINE INDY10}
 {$ELSE}
-  {$UNDEF INDY10}
-  {$DEFINE INDY9}
-{$IFEND}
+  {$IF CompilerVersion > 21}
+      {$UNDEF INDY9}
+      {$DEFINE INDY10}
+    {$ELSE}
+      {$UNDEF INDY10}
+      {$DEFINE INDY9}
+  {$IFEND}
+{$ENDIF}
 
 { By default it assumes Indy10 for DelphiXE and above 
   and INDY9 for lower versions, if you have different 

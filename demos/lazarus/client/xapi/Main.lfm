@@ -1,0 +1,108 @@
+object Form1: TForm1
+  Left = 313
+  Height = 456
+  Top = 235
+  Width = 924
+  Caption = 'Hello Client'
+  ClientHeight = 456
+  ClientWidth = 924
+  Color = clBtnFace
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  LCLVersion = '1.1'
+  object Button1: TButton
+    Left = 8
+    Height = 25
+    Top = 8
+    Width = 75
+    Caption = 'Say Hello'
+    OnClick = Button1Click
+    TabOrder = 0
+  end
+  object ebMessage: TEdit
+    Left = 232
+    Height = 21
+    Top = 40
+    Width = 121
+    TabOrder = 1
+    Text = 'Hello'
+  end
+  object lstMessages: TListBox
+    Left = 104
+    Height = 304
+    Top = 120
+    Width = 625
+    ItemHeight = 0
+    TabOrder = 2
+  end
+  object btnMany: TButton
+    Left = 8
+    Height = 25
+    Top = 48
+    Width = 75
+    Caption = 'Say Hello Lots'
+    OnClick = btnManyClick
+    TabOrder = 3
+  end
+  object ebHelloCount: TEdit
+    Left = 8
+    Height = 21
+    Top = 80
+    Width = 41
+    TabOrder = 4
+    Text = '10'
+  end
+  object udHelloCount: TUpDown
+    Left = 49
+    Height = 21
+    Top = 80
+    Width = 15
+    Associate = ebHelloCount
+    Min = 0
+    Max = 1000
+    Position = 10
+    TabOrder = 5
+    Wrap = False
+  end
+  object ebPort: TEdit
+    Left = 104
+    Height = 21
+    Top = 72
+    Width = 65
+    TabOrder = 6
+    Text = '80'
+  end
+  object udPort: TUpDown
+    Left = 169
+    Height = 21
+    Top = 72
+    Width = 15
+    Associate = ebPort
+    Min = 0
+    Max = 32767
+    Position = 80
+    TabOrder = 7
+    Wrap = False
+    OnClick = udPortClick
+  end
+  object ebHost: TEdit
+    Left = 104
+    Height = 21
+    Top = 40
+    Width = 121
+    TabOrder = 8
+    Text = 'srvxen1'
+  end
+  object Button2: TButton
+    Left = 390
+    Height = 25
+    Top = 52
+    Width = 75
+    Caption = 'Button2'
+    OnClick = Button2Click
+    TabOrder = 9
+  end
+end

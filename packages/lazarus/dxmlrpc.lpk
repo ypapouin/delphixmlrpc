@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Package Version="4">
+    <PathDelim Value="\"/>
+    <Name Value="dxmlrpc"/>
+    <Author Value="dremlinru, gasmasher, imensen, iwache, alessiopollero"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <IncludeFiles Value="..\..\source"/>
+        <OtherUnitFiles Value="source;..\..\source"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+      <Parsing>
+        <SyntaxOptions>
+          <SyntaxMode Value="Delphi"/>
+        </SyntaxOptions>
+      </Parsing>
+      <Other>
+        <CompilerMessages>
+          <MsgFileName Value=""/>
+        </CompilerMessages>
+        <CompilerPath Value="$(CompPath)"/>
+      </Other>
+    </CompilerOptions>
+    <Description Value="Delphi XML-RPC for Lazarus http://sourceforge.net/projects/delphixml-rpc/
+v3.0.0"/>
+    <License Value="LGPL"/>
+    <Version Major="3"/>
+    <Files Count="8">
+      <Item1>
+        <Filename Value="..\..\source\DIMime.pas"/>
+        <UnitName Value="DIMime"/>
+      </Item1>
+      <Item2>
+        <Filename Value="..\..\source\LibXmlParser.pas"/>
+        <UnitName Value="LibXmlParser"/>
+      </Item2>
+      <Item3>
+        <Filename Value="..\..\source\XmlRpcClient.pas"/>
+        <UnitName Value="XmlRpcClient"/>
+      </Item3>
+      <Item4>
+        <Filename Value="..\..\source\XmlRpcCommon.pas"/>
+        <UnitName Value="XmlRpcCommon"/>
+      </Item4>
+      <Item5>
+        <Filename Value="..\..\source\XmlRpcServer.pas"/>
+        <UnitName Value="XmlRpcServer"/>
+      </Item5>
+      <Item6>
+        <Filename Value="..\..\source\XmlRpcTypes.pas"/>
+        <UnitName Value="XmlRpcTypes"/>
+      </Item6>
+      <Item7>
+        <Filename Value="..\..\source\XmlRpcWebServer.pas"/>
+        <UnitName Value="XmlRpcWebServer"/>
+      </Item7>
+      <Item8>
+        <Filename Value="dxmlrpc.pas"/>
+        <UnitName Value="dxmlrpc"/>
+      </Item8>
+    </Files>
+    <Type Value="RunAndDesignTime"/>
+    <RequiredPkgs Count="2">
+      <Item1>
+        <PackageName Value="indylaz"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="FCL"/>
+      </Item2>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>

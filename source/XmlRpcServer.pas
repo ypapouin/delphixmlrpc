@@ -4,7 +4,7 @@
 { XML-RPC Library for Delphi, Kylix and DWPL (DXmlRpc)  }
 { XmlRpcServer.pas                                      }
 {                                                       }
-{ for Delphi 6, 7, XE                                   }
+{ for Delphi 6, 7, XE and Lazarus                       }
 { Release 2.0.0                                         }
 { Copyright (c) 2001-2003 by Team-DelphiXml-Rpc         }
 { e-mail: team-dxmlrpc@dwp42.org                        }
@@ -53,6 +53,9 @@ uses
   IdTCPServer,
   XmlRpcCommon,
   LibXmlParser,
+  {$IFDEF FPC}
+  IdGlobal,
+  {$ENDIF}
   {$IFDEF INDY10}
   IdContext,
   {$ENDIF}
@@ -574,6 +577,9 @@ begin
     MethodHandler.Help := 'Returns a array of know signatures for this method';
     RegisterMethodHandler(MethodHandler);
   end;
+  {$IFDEF FPC}
+  FServer.Bindings.Add.IPVersion := Id_IPv4;
+  {$ENDIF}
   FServer.Active := True;
 end;
 
