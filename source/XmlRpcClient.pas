@@ -335,9 +335,9 @@ begin
     repeat
       if (SearchRec.Attr and faDirectory = 0) then
         if FileIsExpired(GetTempDir + SearchRec.Name, Ttl) then
-          DeleteFile(GetTempDir + SearchRec.Name);
+          SysUtils.DeleteFile(GetTempDir + SearchRec.Name);
     until FindNext(SearchRec) <> 0;
-    FindClose(SearchRec);
+    SysUtils.FindClose(SearchRec);
   end;
 end;
 
@@ -615,7 +615,7 @@ begin
         if (FStack.Count > 0) then
         begin
           if (TObject(FStack.Peek) is TRpcArray) then
-            TRpcArray(FStack.Peek).AddItem(RpcArray);
+            TRpcArray(FStack.Peek).AddItem(RpcArray)
           else if (TObject(FStack.Peek) is TRpcStruct) then
             TRpcStruct(FStack.Peek).AddItem(PopStructName, RpcArray);
         end
