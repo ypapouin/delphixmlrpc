@@ -312,7 +312,7 @@ end;
 
 function FloatToRpcStr(Value: Double): TXmlString;
 begin
-  Result := SubstDecSep(FloatToStr(Value), TXmlChar(DecimalSeparator), RpcDecimalSeparator);
+  Result := SubstDecSep(FloatToStr(Value), TXmlChar(FormatSettings.DecimalSeparator), RpcDecimalSeparator);
 end;
 
 {------------------------------------------------------------------------------}
@@ -321,7 +321,7 @@ end;
 
 function RpcStrToFloat(Value: TXmlString): Double;
 begin
-  Result := StrToFloat(SubstDecSep(Value, (RpcDecimalSeparator), TXmlChar(DecimalSeparator)));
+  Result := StrToFloat(SubstDecSep(Value, (RpcDecimalSeparator), TXmlChar(FormatSettings.DecimalSeparator)));
 end;
 
 {------------------------------------------------------------------------------}
