@@ -1,7 +1,7 @@
 {-------------------------------------------------------------------------------
  
- Copyright (c) 1999-2014 Ralf Junker, Yunqa
- Internet: http://www.yunqa.de
+ Copyright (c) 1999-2017 Ralf Junker, Yunqa
+ Internet: https://www.yunqa.de
  E-Mail:   delphi@yunqa.de
 
 -------------------------------------------------------------------------------}
@@ -125,9 +125,21 @@ type
 
   UInt64 = 0..High(Int64);
 
-  {$ENDIF ~COMPILE_9_UP}
+  {$ENDIF ~COMPILER_9_UP}
+
+  {$IFNDEF COMPILER_11_UP}
+
+type
+
+  TBytes = packed array of Byte;
+
+  {$ENDIF ~COMPILER_11_UP}
 
   {$IFNDEF COMPILER_12_UP}
+
+const
+
+  faNormal = $00000080{$IFDEF SUPPORTS_PLATFORM}platform{$ENDIF};
 
 type
 
@@ -145,8 +157,8 @@ function StringRefCount(const s: UnicodeString): Integer; overload; {$IFDEF SUPP
 function Utf8ToString(const s: RawByteString): UnicodeString; {$IFDEF SUPPORTS_INLINE}inline; {$ENDIF}overload;
 function Utf8ToString(const s: PAnsiChar): UnicodeString; {$IFDEF SUPPORTS_INLINE}inline; {$ENDIF}overload;
 
-function UTF8ToUnicodeString(const s: RawByteString): UnicodeString; overload;
-function UTF8ToUnicodeString(const s: PAnsiChar): UnicodeString; overload;
+function Utf8ToUnicodeString(const s: RawByteString): UnicodeString; overload;
+function Utf8ToUnicodeString(const s: PAnsiChar): UnicodeString; overload;
 
 {$ENDIF ~COMPILER_12_UP}
 
@@ -158,6 +170,7 @@ type
 
   {$IFDEF MSWINDOWS}
 const
+
   INVALID_FILE_ATTRIBUTES = Cardinal($FFFFFFFF);
   {$ENDIF MSWINDOWS]
 
@@ -472,15 +485,15 @@ end;
 
 function Utf8ToString(const s: RawByteString): UnicodeString;
 begin
-  Result := UTF8ToUnicodeString(s);
+  Result := Utf8ToUnicodeString(s);
 end;
 
 function Utf8ToString(const s: PAnsiChar): UnicodeString;
 begin
-  Result := UTF8ToUnicodeString(s);
+  Result := Utf8ToUnicodeString(s);
 end;
 
-function UTF8ToUnicodeString(const s: RawByteString): UnicodeString;
+function Utf8ToUnicodeString(const s: RawByteString): UnicodeString;
 var
   l: Cardinal;
 begin
@@ -499,7 +512,7 @@ begin
   Result := '';
 end;
 
-function UTF8ToUnicodeString(const s: PAnsiChar): UnicodeString; overload;
+function Utf8ToUnicodeString(const s: PAnsiChar): UnicodeString; overload;
 var
   l: Integer;
 begin
