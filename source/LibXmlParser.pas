@@ -212,12 +212,17 @@ Date        Author Version Changes
                            Delphi 2009/2010 compatibility
                            (no UnicodeString compatibility though, sorry)
 2010-10-12  HeySt  1.0.20  Checked Delphi XE compatibility
-                           Included a $DEFINE for FreePascal compatibility
+                           Included a $MODE for FreePascal compatibility
                            CurContent is not reset to an empty string with every start tag.
                            I will keep this behaviour so old code doesn't get broken.
                            In case you need this you can set CurContent yourself at every
                            start tag.
+2014-05-15  HeySt  1.0.21  Refer Unicode Delphi users to the new LibXmlParserU unit
 *)
+
+(*$IFDEF UNICODE *)
+(*$MESSAGE Warn 'Use LibXmlParserU instead of LibXmlParser for Unicode projects'*)
+(*$ENDIF *)
 
 
 // --- Delphi/Kylix/C++Builder Version Numbers
@@ -262,7 +267,7 @@ USES
   Math;
 
 CONST
-  CVersion      = '1.0.20';          // This variable will be updated for every release
+  CVersion      = '1.0.21';          // This variable will be updated for every release
                                      // (I hope, I won't forget to do it everytime ...)
   CUnknownChar  = '¿';               // Replacement for unknown/untransformable character references
 
@@ -366,10 +371,10 @@ TYPE
                  // --- Document Handling
                  FUNCTION  LoadFromFile   (Filename : STRING;
                                            FileMode : INTEGER = fmOpenRead OR fmShareDenyNone) : BOOLEAN;
-                                                                          // Loads Document from given file
-                 FUNCTION  LoadFromBuffer (Buffer : PAnsiChar) : BOOLEAN;     // Loads Document from another buffer
+                                                                              // Loads Document from given file
+                 FUNCTION  LoadFromBuffer (Buffer : PAnsiChar) : boolean;     // Loads Document from another buffer
                  PROCEDURE SetBuffer      (Buffer : PAnsiChar);               // References another buffer
-                 PROCEDURE Clear;                                         // Clear Document
+                 PROCEDURE Clear;                                             // Clear Document
 
                PUBLIC
                  // --- Scanning through the document
@@ -737,6 +742,35 @@ CONST
                     $00E4, $00E5, $00E6, $00E7, $00E8, $00E9, $00EA, $00EB, $00EC, $00ED,
                     $00EE, $00EF, $00F0, $00F1, $00F2, $00F3, $00F4, $00F5, $00F6, $00F7,
                     $00F8, $00F9, $00FA, $00FB, $00FC, $00FD, $00FE, $00FF);
+
+  WIN1254_UNICODE : ARRAY [$00..$FF] OF WORD = (   // Windows-1254 = West Europe, Turkey
+                    $0000, $0001, $0002, $0003, $0004, $0005, $0006, $0007, $0008, $0009,
+                    $000A, $000B, $000C, $000D, $000E, $000F, $0010, $0011, $0012, $0013,
+                    $0014, $0015, $0016, $0017, $0018, $0019, $001A, $001B, $001C, $001D,
+                    $001E, $001F, $0020, $0021, $0022, $0023, $0024, $0025, $0026, $0027,
+                    $0028, $0029, $002A, $002B, $002C, $002D, $002E, $002F, $0030, $0031,
+                    $0032, $0033, $0034, $0035, $0036, $0037, $0038, $0039, $003A, $003B,
+                    $003C, $003D, $003E, $003F, $0040, $0041, $0042, $0043, $0044, $0045,
+                    $0046, $0047, $0048, $0049, $004A, $004B, $004C, $004D, $004E, $004F,
+                    $0050, $0051, $0052, $0053, $0054, $0055, $0056, $0057, $0058, $0059,
+                    $005A, $005B, $005C, $005D, $005E, $005F, $0060, $0061, $0062, $0063,
+                    $0064, $0065, $0066, $0067, $0068, $0069, $006A, $006B, $006C, $006D,
+                    $006E, $006F, $0070, $0071, $0072, $0073, $0074, $0075, $0076, $0077,
+                    $0078, $0079, $007A, $007B, $007C, $007D, $007E, $007F,
+
+                    $20AC, $0   , $201A, $0192, $201E, $2026, $2020, $2021, $02C6, $2030,
+                    $0160, $2039, $0152, $0   , $0   , $0   , $0   , $2018, $2019, $201C,
+                    $201D, $2022, $2013, $2014, $02DC, $2122, $0161, $203A, $0153, $0   ,
+                    $0   , $0178, $00A0, $00A1, $00A2, $00A3, $00A4, $00A5, $00A6, $00A7,
+                    $00A8, $00A9, $00AA, $00AB, $00AC, $00AD, $00AE, $00AF, $00B0, $00B1,
+                    $00B2, $00B3, $00B4, $00B5, $00B6, $00B7, $00B8, $00B9, $00BA, $00BB,
+                    $00BC, $00BD, $00BE, $00BF, $00C0, $00C1, $00C2, $00C3, $00C4, $00C5,
+                    $00C6, $00C7, $00C8, $00C9, $00CA, $00CB, $00CC, $00CD, $00CE, $00CF,
+                    $011E, $00D1, $00D2, $00D3, $00D4, $00D5, $00D6, $00D7, $00D8, $00D9,
+                    $00DA, $00DB, $00DC, $0130, $015E, $00DF, $00E0, $00E1, $00E2, $00E3,
+                    $00E4, $00E5, $00E6, $00E7, $00E8, $00E9, $00EA, $00EB, $00EC, $00ED,
+                    $00EE, $00EF, $011F, $00F1, $00F2, $00F3, $00F4, $00F5, $00F6, $00F7,
+                    $00F8, $00F9, $00FA, $00FB, $00FC, $0131, $015F, $00FF);
 
 
 (* UTF-8  (somewhat simplified)
@@ -1288,7 +1322,7 @@ BEGIN
     END;
   StrCopy (FBuffer, Buffer);
   FSource := '<MEM>';
-  Result := TRUE;
+  Result  := TRUE;
 END;
 
 
@@ -1297,7 +1331,7 @@ BEGIN
   Clear;
   FBuffer     := Buffer;
   FBufferSize := 0;
-  FSource := '<REFERENCE>';
+  FSource     := '<REFERENCE>';
 END;
 
 
@@ -1663,7 +1697,7 @@ PROCEDURE TXmlParser.AnalyzeTag;
                     ELSE IF EntName = 'apos' THEN Repl := ''''
                     ELSE IF EntName = 'quot' THEN Repl := '"'
                     ELSE IF Copy (EntName, 1, 1) = '#' THEN BEGIN   // Character Reference
-                      IF EntName [2] = 'x' 
+                      IF EntName [2] = 'x'
                         THEN Repl := TranslateCharacter (StrToIntDef ('$' + Copy (string (EntName), 3, MaxInt), ord (CUnknownChar)))
                         ELSE Repl := TranslateCharacter (StrToIntDef (      Copy (string (EntName), 2, MaxInt), ord (CUnknownChar)));
                       END
