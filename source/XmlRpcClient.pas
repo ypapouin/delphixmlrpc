@@ -379,7 +379,8 @@ begin
   ResponseStream := nil;
   IdSSLIOHandlerSocket := nil;
   try
-    SendStream := TStringStream.Create(RawData);
+
+    SendStream := TStringStream.Create(System.UTF8Encode(RawData));
     SendStream.Position := 0;
     ResponseStream := TStringStream.Create;
 
@@ -398,7 +399,6 @@ begin
         IdSSLIOHandlerSocket.SSLOptions.KeyFile := FSSLKeyFile;
         Session.IOHandler := IdSSLIOHandlerSocket;
       end;
-
 
       { proxy setup }
       if (FProxyName <> '') then
@@ -424,7 +424,6 @@ begin
       Session.Request.Accept := '*/*';
       Session.Request.ContentType := 'text/xml';
       Session.Request.Connection := 'Keep-Alive';
-      //Session.Request.ContentLength := Length(RawData);
       Session.Request.ContentLength := SendStream.Size;
 
       if FSSLEnable then
@@ -442,7 +441,7 @@ begin
         end;
       end;
 
-      Result := ResponseStream.DataString;
+      Result := System.UTF8ToUnicodeString(ResponseStream.DataString);
     finally
       Session.Free;
     end;
@@ -486,10 +485,6 @@ var
   TT: string;
 begin
   Data := FParser.CurContent;
-  if FParser.CurEncoding = 'UTF-8' then
-  begin
-    Data := System.UTF8ToUnicodeString(FParser.CurContent);
-  end;
 
   { avoid to skip empty string values inside a struct }
   if ((FLastTag = 'STRING') and (FStructNames.Count > 0) and (not (Trim(Data) <> ''))) then
@@ -675,10 +670,6 @@ end;
 function TRpcClientParser.GetTag: TXmlString;
 begin
   Result := FParser.CurName;
-  if FParser.CurEncoding = 'UTF-8' then
-  begin
-    Result := System.UTF8ToUnicodeString(FParser.CurName);
-  end;
   Result := UpperCase(Trim(Result));
 end;
 
