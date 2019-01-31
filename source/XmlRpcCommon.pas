@@ -148,6 +148,10 @@ function Hash128AsHex(const Hash128Value: T4x4LongWordRecord): string;
 
 const
   ValidURLChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$-_@.&+-!''*"(),;/#?:';
+  XML_NULL_STRING = '<string>[NULL]</string>';
+  XML_NULL_VALUE = '<value>[NULL]</value>';
+  XML_NULL_DATA = '<data>[NULL]</data>';
+  XML_NULL_STRUCT = '<struct>[NULL]</struct>';
 
 implementation
 
@@ -245,21 +249,27 @@ end;
 {------------------------------------------------------------------------------}
 
 function StreamToString(Stream: TStream): TXmlString;
+var
+  StringStream: TStringStream;
 begin
-  Result := '';
-  Stream.Seek(0, soFromBeginning);
-  SetLength(Result, Stream.Size);
-  Stream.Read(Result[1], Stream.Size);
+  StringStream := TStringStream.Create;
+  StringStream.LoadFromStream(Stream);
+  Result := StringStream.DataString;
+  StringStream.Free;
 end;
-
 {------------------------------------------------------------------------------}
 {  Converts a TXmlString to a stream                                               }
 {------------------------------------------------------------------------------}
 
 procedure StringToStream(const Text: TXmlString; Stream: TStream);
+var
+  StringStream: TStringStream;
 begin
-  Stream.Write(Text[1], Length(Text));
+  StringStream := TStringStream.Create(Text);
+  StringStream.SaveToStream(Stream);
+  StringStream.Free;
 end;
+
 
 {------------------------------------------------------------------------------}
 {  Converts a date time to iso 8601 format                                     }
@@ -577,31 +587,33 @@ end;
 {------------------------------------------------------------------------------}
 
 function FixEmptyString(const Value: TXmlString): TXmlString;
+
+
 begin
-  Result := StringReplace(Value, '<string></string>', '<string>[NULL]</string>',
+  Result := StringReplace(Value, '<string></string>', XML_NULL_STRING,
     [rfReplaceAll, rfIgnoreCase]);
   Result := StringReplace(Result, '<string></nil></string>',
-    '<string>[NULL]</string>', [rfReplaceAll, rfIgnoreCase]);
+    XML_NULL_STRING, [rfReplaceAll, rfIgnoreCase]);
   Result := StringReplace(Result, '<string></null></string>',
-    '<string>[NULL]</string>', [rfReplaceAll, rfIgnoreCase]);
+    XML_NULL_STRING, [rfReplaceAll, rfIgnoreCase]);
   Result := StringReplace(Result, '<string> </string>',
-    '<string>[NULL]</string>', [rfReplaceAll, rfIgnoreCase]);
+    XML_NULL_STRING, [rfReplaceAll, rfIgnoreCase]);
 
   // CLINTON 16/9/2003 - <string></string> was not compatible with XML-RPC spec.
   Result := StringReplace(Result,'<value></value>',
-      '<value>[NULL]</value>', [rfReplaceAll, rfIgnoreCase]);
+      XML_NULL_VALUE, [rfReplaceAll, rfIgnoreCase]);
   Result := StringReplace(Result,'<value></nil></value>',
-      '<value>[NULL]</value>', [rfReplaceAll, rfIgnoreCase]);
+      XML_NULL_VALUE, [rfReplaceAll, rfIgnoreCase]);
   Result := StringReplace(Result,'<value></null></value>',
-      '<value>[NULL]</value>', [rfReplaceAll, rfIgnoreCase]);
+      XML_NULL_VALUE, [rfReplaceAll, rfIgnoreCase]);
   Result := StringReplace(Result,'<value> </value>',
-      '<value>[NULL]</value>', [rfReplaceAll, rfIgnoreCase]);
+      XML_NULL_VALUE, [rfReplaceAll, rfIgnoreCase]);
   Result := StringReplace(Result,'<value/>',
-      '<value>[NULL]</value>', [rfReplaceAll, rfIgnoreCase]);
+      XML_NULL_VALUE, [rfReplaceAll, rfIgnoreCase]);
   Result := StringReplace(Result,'<data/>',
-      '<data>[NULL]</data>', [rfReplaceAll, rfIgnoreCase]);
+      XML_NULL_DATA, [rfReplaceAll, rfIgnoreCase]);
   Result := StringReplace(Result,'<struct/>',
-      '<struct>[NULL]</struct>', [rfReplaceAll, rfIgnoreCase]);
+      XML_NULL_STRUCT, [rfReplaceAll, rfIgnoreCase]);
 end;
 
 {$IFDEF ACTIVEX}

@@ -10,17 +10,17 @@ uses
 type
 
 {$IFDEF UNICODE}
-    TXmlStrings = TJclAnsiStrings;
-    TXmlStringList = TJclAnsiStringList;
-    TXmlString = AnsiString;
-    TXmlChar = AnsiChar;
-    PXmlChar = PAnsiChar;
-{$ELSE}
     TXmlStrings = TStrings;
     TXmlStringList = TStringList;
     TXmlString = String;
     TXmlChar = Char;
     PXmlChar = PChar;
+{$ELSE}
+    TXmlStrings = TJclAnsiStrings;
+    TXmlStringList = TJclAnsiStringList;
+    TXmlString = AnsiString;
+    TXmlChar = AnsiChar;
+    PXmlChar = PAnsiChar;
 {$ENDIF}
 
 

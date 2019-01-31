@@ -197,8 +197,6 @@ end ;
 {------------------------------------------------------------------------------}
 
 procedure TRpcClientParser.Parse(Data: TXmlString);
-var
-  Response: AnsiString;
 begin
   FRpcResult := TRpcResult.Create;
 
@@ -226,9 +224,9 @@ begin
   if not Assigned(FStructNames) then  
     FStructNames := TXmlStringList.Create;
     
-  Response := AnsiString(Data);
+
   FRpcResult.Clear;
-  FParser.LoadFromBuffer(PXmlChar(Response));
+  FParser.LoadFromString(Data);
   FParser.StartScan;
   FParser.Normalize := False;
   while FParser.Scan do
@@ -371,21 +369,19 @@ end;
 
 function TRpcCaller.Post(const RawData: TXmlString): TXmlString;
 var
-  SendStream: TStream;
-  ResponseStream: TStream;
+  SendStream: TStringStream;
+  ResponseStream: TStringStream;
   Session: TIdHttp;
   IdSSLIOHandlerSocket: TIdSSLIOHandlerSocketOpenSSL;
-  RawDataFix: string;
 begin
   SendStream := nil;
   ResponseStream := nil;
   IdSSLIOHandlerSocket := nil;
   try
-    SendStream := TMemoryStream.Create;
-    ResponseStream := TMemoryStream.Create;
-    RawDataFix := AnsiToUtf8(RawData);
-    StringToStream(RawDataFix, SendStream); { convert to a stream }
+    SendStream := TStringStream.Create(RawData);
     SendStream.Position := 0;
+    ResponseStream := TStringStream.Create;
+
     Session := TIdHttp.Create(nil);
     Session.OnWork := DoWork;
     Session.OnWorkBegin := DoWorkBegin;
@@ -427,21 +423,25 @@ begin
       Session.Request.Accept := '*/*';
       Session.Request.ContentType := 'text/xml';
       Session.Request.Connection := 'Keep-Alive';
-      Session.Request.ContentLength := Length(RawDataFix);
-      if not FSSLEnable then
+      //Session.Request.ContentLength := Length(RawData);
+      Session.Request.ContentLength := SendStream.Size;
+
+      if FSSLEnable then
+      begin
+        Session.Post('https://' + FHostName + ':' + IntToStr(FHostPort) +
+          FEndPoint, SendStream, ResponseStream);
+      end
+        else
+      begin
         if FHostPort = 80 then
           Session.Post('http://' + FHostName + FEndPoint, SendStream, ResponseStream)
         else
         begin
           Session.Post('http://' + FHostName + ':' + IntToStr(FHostPort) + FEndPoint, SendStream, ResponseStream);
         end;
+      end;
 
-
-      if FSSLEnable then
-        Session.Post('https://' + FHostName + ':' + IntToStr(FHostPort) +
-          FEndPoint, SendStream, ResponseStream);
-
-      Result := StreamToString(ResponseStream);
+      Result := ResponseStream.DataString;
     finally
       Session.Free;
     end;
