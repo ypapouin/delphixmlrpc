@@ -81,6 +81,7 @@ type
     constructor Create;
     destructor Destroy; override;
     procedure Parse(Data: TXmlString);
+    function GetTag: TXmlString;
     procedure StartTag;
     procedure EndTag;
     procedure DataTag;
@@ -481,9 +482,15 @@ end;
 procedure TRpcClientParser.DataTag;
 var
   Data: TXmlString;
+
+  TT: string;
 begin
   Data := FParser.CurContent;
-  
+  if FParser.CurEncoding = 'UTF-8' then
+  begin
+    Data := System.UTF8ToUnicodeString(FParser.CurContent);
+  end;
+
   { avoid to skip empty string values inside a struct }
   if ((FLastTag = 'STRING') and (FStructNames.Count > 0) and (not (Trim(Data) <> ''))) then
     Data := '[NULL]';
@@ -587,7 +594,7 @@ var
   RpcArray: TRpcArray;
   Tag: TXmlString;
 begin
-  Tag := UpperCase(Trim(TXmlString(FParser.CurName)));
+  Tag := GetTag;
 
   {if we get a struct closure then
    we pop it off the stack do a peek on
@@ -665,6 +672,16 @@ begin
     end;
 end;
 
+function TRpcClientParser.GetTag: TXmlString;
+begin
+  Result := FParser.CurName;
+  if FParser.CurEncoding = 'UTF-8' then
+  begin
+    Result := System.UTF8ToUnicodeString(FParser.CurName);
+  end;
+  Result := UpperCase(Trim(Result));
+end;
+
 {------------------------------------------------------------------------------}
 
 procedure TRpcClientParser.StartTag;
@@ -673,7 +690,7 @@ var
   RpcStruct: TRpcStruct;
   RpcArray: TRpcArray;
 begin
-  Tag := UpperCase(Trim(TXmlString(FParser.CurName)));
+  Tag := GetTag;
 
   if (Tag = 'STRUCT') then
   begin

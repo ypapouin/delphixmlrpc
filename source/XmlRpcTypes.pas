@@ -46,7 +46,7 @@
 
   Method TRpcCustomItem.GetAsString extended to
   convert different data types (Integer, Float, Base64,
-  DateTime and Boolean) into AnsiStrings.
+  DateTime and Boolean) into Strings.
 
   Methods TRpcArray.GetAsXML, LoadRawData and
   TRpcStruct.GetAsXML, LoadRawData and
