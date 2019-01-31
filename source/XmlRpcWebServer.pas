@@ -40,14 +40,10 @@ type
   end;
 
 implementation
+
 uses
-SysUtils;//;, Classes, Contnrs, SyncObjs;
-{
-  IdHTTPServer,
-  IdTCPServer,
-  XmlRpcCommon,
-  LibXmlParser;
-}  
+  SysUtils;
+
 { TRpcWebServer }
 
 procedure TRpcWebServer.SetRootFolder(AValue : String);

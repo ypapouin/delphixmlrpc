@@ -52,7 +52,11 @@ uses
   IdHTTPServer,
   IdTCPServer,
   XmlRpcCommon,
+  {$IFDEF UNICODE}
+  LibXmlParserU,
+  {$ELSE}
   LibXmlParser,
+  {$ENDIF}
   {$IFDEF FPC}
   IdGlobal,
   {$ENDIF}

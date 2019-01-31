@@ -1,4 +1,4 @@
-
+ï»¿
 unit XmlRpcUnicode;
 
 
@@ -70,7 +70,7 @@ CONST
 
    Example
    --------
-   Transforming the Unicode character U+00E4 LATIN SMALL LETTER A WITH DIAERESIS  ("ä"):
+   Transforming the Unicode character U+00E4 LATIN SMALL LETTER A WITH DIAERESIS  ("ï¿½"):
 
          ISO-8859-1,           Decimal  228
          Win1252,              Hex      $E4
@@ -81,7 +81,7 @@ CONST
                                Binary   11000011 10100100
                                Hex      $C3      $A4
                                Decimal  195      164
-                               ANSI     Ã        ¤         *)
+                               ANSI     ï¿½        ï¿½         *)
 
 FUNCTION  AnsiToUtf8 (Source : ANSISTRING) : STRING;
           (* Converts the given Windows ANSI (Windows-1252) String to UTF-8. *)

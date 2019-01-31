@@ -52,7 +52,11 @@ uses
   IdHash,
 {$ENDIF}
   IdComponent,
+  {$IFDEF UNICODE}
+  LibXmlParserU;
+  {$ELSE}
   LibXmlParser;
+  {$ENDIF}
 
 type
 
