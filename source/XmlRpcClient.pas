@@ -113,9 +113,10 @@ type
     procedure DoWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: TIndyInteger);
     procedure DoWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
   protected
-    FSession: TIdHTTP;
     function Post(const RawData: TXmlString): TXmlString; virtual;
   public
+    ConnectTimeout: Integer;
+    ReadTimeout: Integer;
     constructor Create; virtual;
     destructor Destroy; override;
     property EndPoint: TXmlString read FEndPoint write FEndPoint;
@@ -388,6 +389,8 @@ begin
     Session.OnWork := DoWork;
     Session.OnWorkBegin := DoWorkBegin;
     Session.OnWorkEnd := DoWorkEnd;
+    Session.ConnectTimeout := ConnectTimeout;
+    Session.ReadTimeout := ReadTimeout;
 
     try
       IdSSLIOHandlerSocket := nil;
@@ -462,16 +465,12 @@ begin
   FHostPort := 80;
   FSSLEnable := False;
   FProxyBasicAuth := False;
+  ConnectTimeout := 0;
+  ReadTimeout := -1;
 end;
 
 destructor TRpcCaller.Destroy;
 begin
-  if Assigned(FSession) then
-  begin
-    FSession.Free;
-    FSession := nil;
-  end;
-
   inherited;
 end;
 
