@@ -458,10 +458,10 @@ begin
       Result := DateTimeToStr(AsDateTime);
     dtBoolean:
       Result := BoolToStr(AsBoolean, True);
-//    dtStruct:
-//      Result := '<STRUCT>';
-//    dtArray:
-//      Result := '<ARRAY>';
+    dtStruct:
+      Result := AsStruct.GetAsXML;
+    dtArray:
+      Result := AsArray.GetAsXML;
   else
     raise EXmlRpcError.Create('Item type can not be converted into a AnsiString')
   end;
