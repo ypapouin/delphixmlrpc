@@ -131,6 +131,8 @@ Date        Author Version Changes
 2016-04-25  HeySt  2.0.2   .LoadFromBuffer with Size parameter, .LoadFromStream
 2018-02-07  HeySt          (Re)Introduced the TXmlScanner and TXmlEasyScanner classes
 2018-10-08  HeySt  2.0.3   Memory Leak fix in TXmlParser.LoadFromStream
+2019-02-28  HeySt  2.0.4   Off-by-one fixed in LoadFromStream, wrote terminator beyond buffer
+2019-08-04  HeySt  2.0.5   PresetEncoding and IgnoreEncoding
 *)
 
 (*$IFDEF FPC *)
@@ -155,7 +157,7 @@ uses
   Windows, SysUtils, Classes, Contnrs;
 
 const
-  CVersion      = '2.0.3';           // Release version number
+  CVersion      = '2.0.5';           // Release version number
   CUnknownChar  : char = #$00BF;     // Replacement for unknown/untransformable character references (inverted question mark)
   CP_UTF8       = 65001;             // UTF-8 Codepage number
 
@@ -206,22 +208,23 @@ type
                    end;
 
   TXmlParser = class
-               protected                         // --- Internal Properties and Methods
-                 FBuffer      : PAnsiChar;       // nil if there is no buffer available
-                 FBufferSize  : NativeInt;       // 0 if the buffer is not owned by the Document instance
-                 FSource      : string;          // Name of Source of document. Filename for Documents loaded with LoadFromFile
+               protected                            // --- Internal Properties and Methods
+                 FBuffer         : PAnsiChar;       // nil if there is no buffer available
+                 FBufferSize     : NativeInt;       // 0 if the buffer is not owned by the Document instance
+                 FSource         : string;          // Name of Source of document. Filename for Documents loaded with LoadFromFile
 
-                 FXmlVersion  : string;          // XML version from Document header. Default is '1.0'
-                 FEncoding    : string;          // Encoding from Document header. Default is 'UTF-8'
-                 FCodePage    : TCodePage;       // Numerical code page, corresponds with FEncoding
-                 FStandalone  : boolean;         // Standalone declaration from Document header. Default is 'yes'
-                 FRootName    : string;          // Name of the Root Element (= DTD name)
-                 FDtdcFinal   : PAnsiChar;       // Pointer to the '>' character terminating the DTD declaration
+                 FXmlVersion     : string;          // XML version from Document header. Default is '1.0'
+                 FEncoding       : string;          // Encoding from Document header (always uppercase). Default is 'UTF-8'
+                 FCodePage       : TCodePage;       // Numerical code page, corresponds with FEncoding
+                 FIgnoreEncoding : boolean;         // Ignore Encoding in XML Prolog and use pre-set FEncoding and FCodePage
+                 FStandalone     : boolean;         // Standalone declaration from Document header. Default is 'yes'
+                 FRootName       : string;          // Name of the Root Element (= DTD name)
+                 FDtdcFinal      : PAnsiChar;       // Pointer to the '>' character terminating the DTD declaration
 
-                 FNormalize   : boolean;         // If true: Pack Whitespace and don't return empty contents
-                 EntityStack  : TEntityStack;    // Entity Stack for Parameter and General Entities
-                 FCurEncoding : string;          // Current Encoding during parsing (always uppercase)
-                 FCurCodePage : TCodePage;       // Numerical code page, corresponds with FCurEncoding
+                 FNormalize      : boolean;         // If true: Pack Whitespace and don't return empty contents
+                 EntityStack     : TEntityStack;    // Entity Stack for Parameter and General Entities
+                 FCurEncoding    : string;          // Current Encoding during parsing (always uppercase)
+                 FCurCodePage    : TCodePage;       // Numerical code page, corresponds with FCurEncoding
 
                  procedure AnalyzeProlog;                                                 // Analyze XML Prolog or Text Declaration
                  procedure AnalyzeComment (Start : PAnsiChar; var Final : PAnsiChar);     // Analyze Comments
@@ -260,6 +263,7 @@ type
                  destructor Destroy;                                      override;
 
                  // --- Document Handling
+                 procedure PresetEncoding  (Encoding : string);                   // Pre-sets the root document encoding
                  function  LoadFromFile    (Filename : string;
                                             FileMode : integer = fmOpenRead OR fmShareDenyNone) : boolean;
                                                                                   // Loads Document from given file
@@ -277,8 +281,9 @@ type
                  CurStart    : PAnsiChar;                             // Current First character
                  CurFinal    : PAnsiChar;                             // Current Last character
                  CurAttr     : TAttrList;                             // Current Attribute List
-                 property CurEncoding : string    read FCurEncoding write FCurEncoding;    // Current Encoding (always uppercase) } Schreiben ist notwendig
-                 property CurCodePage : TCodePage read FCurCodePage write FCurCodePage;    // Current CodePage                    } siehe z.B. Contor.UntFraAnfragen
+                 property CurEncoding    : string    read FCurEncoding;
+                 property CurCodePage    : TCodePage read FCurCodePage;
+                 property IgnoreEncoding : boolean   read FIgnoreEncoding;
                  procedure StartScan;
                  function  Scan : boolean;
 
@@ -551,8 +556,8 @@ type
 type
   TXmlScanner = class (TCustomXmlScanner)
                 public
-                  PROPERTY XmlParser;
-                  PROPERTY StopParser;
+                  property XmlParser;
+                  property StopParser;
                 published
                   property Filename;
                   property Normalize;
@@ -1009,6 +1014,7 @@ begin
   Notations   := TNvpList.Create;
   CurAttr     := TAttrList.Create;
   EntityStack := TEntityStack.Create (Self);
+  FIgnoreEncoding := false;
   Clear;
 end;
 
@@ -1031,18 +1037,18 @@ procedure TXmlParser.Clear;
 begin
   if (FBufferSize > 0) and (FBuffer <> nil) then
     FreeMem (FBuffer);
-  FBuffer      := nil;
-  FBufferSize  := 0;
-  FSource      := '';
-  FXmlVersion  := '';
-  FEncoding    := 'UTF-8';
-  FCodePage    := CP_UTF8;
-  FCurEncoding := 'UTF-8';
-  FCurCodePage := CP_UTF8;
-  FStandalone  := false;
-  FRootName    := '';
-  FDtdcFinal   := nil;
-  FNormalize   := true;
+  FBuffer         := nil;
+  FBufferSize     := 0;
+  FSource         := '';
+  FXmlVersion     := '';
+  FEncoding       := 'UTF-8';
+  FCodePage       := CP_UTF8;
+  FCurEncoding    := 'UTF-8';
+  FCurCodePage    := CP_UTF8;
+  FStandalone     := false;
+  FRootName       := '';
+  FDtdcFinal      := nil;
+  FNormalize      := true;
   Elements.Clear;
   Entities.Clear;
   ParEntities.Clear;
@@ -1131,7 +1137,7 @@ begin
     Terminator^ := #0;
     end;
   FSource := '<MEM>';
-  Result := true;
+  Result  := true;
 end;
 
 
@@ -1148,26 +1154,28 @@ begin
     exit;
     end;
 
-  FBufferSize := Stream.Size + 1;         // +1 for null termination
+  FBufferSize := Stream.Size + 1;              // +1 for null termination
   try
     GetMem (FBuffer, FBufferSize);
     Stream.Seek (0, soBeginning);
     Stream.Read (FBuffer^, FBufferSize - 1);
-    Terminator  := FBuffer + FBufferSize;
-    Terminator^ := #0;
+    Terminator  := FBuffer + FBufferSize - 1;  // Last byte in the buffer
+    Terminator^ := #0;                         // Set to zero
   except
     Clear;
     Result := false;
     exit;
     end;
   FSource := '<MEM>';
-  Result := true;
+  Result  := true;
 end;
 
 
 function  TXmlParser.LoadFromString (const XmlString : string) : boolean;
           // Loads Document from UnicodeString (UTF-16!)
-          // Converts document to UTF-8
+          // Converts the document encoding to UTF-8
+          // Leaves the XML itself unchanged, so the XML Prolog will not be changed to
+          // say 'encoding="UTF-8"'.
 
   function Utf8Length (S : string) : integer;
   var
@@ -1180,26 +1188,24 @@ function  TXmlParser.LoadFromString (const XmlString : string) : boolean;
         #$0080..#$07FF : inc (Result, 2);   // 110xxxxx 10xxxxxx
         #$0800..#$D7FF,
         #$E000..#$FFFF : inc (Result, 3);   // 1110xxxx 10xxxxxx 10xxxxxx
-        #$D800..#$DFFF : inc (Result, 4);   // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx  - Surrogate Pair Area
+        #$D800..#$DFFF : inc (Result, 2);   // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx  - Surrogate Pair Area
+                               //     ^-- 2 for the first + 2 for the second word = 4 for the character
         end;
   end;
 
 begin
   Clear;
+  PresetEncoding ('UTF-8');   // The file will be UTF-8, independent of the encoding specified in the XML Prolog
   FBufferSize := Utf8Length (XmlString) + 1;
   try
     GetMem (FBuffer, FBufferSize);
     FBufferSize := UnicodeToUtf8 (FBuffer, FBufferSize, PWideChar (XmlString), Length (XmlString));
-    FEncoding := 'UTF-8';
-    FCodePage := CP_UTF8;
-    // Todo 1: When there is an encoding declaration in the XML declaring anything other than UTF-8, processing will be wrong.
-    // Todo 1: Bei Contor.UntFraAnfragen abschauen, wie dort UTF-8 erzwungen wird: durch Überschreiben beim ptXmlProlog
   except
     Clear;
     exit (false);
     end;
   FSource := '<STR>';
-  Result := true;
+  Result  := true;
 end;
 
 
@@ -1218,6 +1224,24 @@ begin
   FSource := '<REFERENCE>';
 end;
 
+
+procedure TXmlParser.PresetEncoding (Encoding: string);
+          // Can be called prior to loading the XML. If Encoding is a non-empty string,
+          // it will be set as the encoding and the encoding in the XML Prolog will be ignored.
+          // Can be used for cases when the XML has already been re-encoded and the
+          // XML Prolog is unchanged.
+begin
+  if Encoding = '' then begin
+    FEncoding       := 'UTF-8';
+    FCodepage       := CP_UTF8;
+    FIgnoreEncoding := false;
+    end
+  else begin
+    FEncoding       := AnsiUpperCase (Encoding);
+    FCodepage       := EncodingToCodePage (Encoding);
+    FIgnoreEncoding := true;
+    end;
+end;
 
 //-----------------------------------------------------------------------------------------------
 // Scanning through the document
@@ -1295,18 +1319,26 @@ begin
   CurAttr.Analyze (CurStart + 5, F, FCurCodePage);
   if EntityStack.Count = 0 then begin
     FXmlVersion := CurAttr.Value ('version');
-    FEncoding   := AnsiUpperCase (CurAttr.Value ('encoding'));
-    FCodePage   := EncodingToCodePage (FEncoding);
+    if not FIgnoreEncoding then begin
+      FEncoding   := AnsiUpperCase (CurAttr.Value ('encoding'));
+      FCodePage   := EncodingToCodePage (FEncoding);
+      end;
     FStandalone := CurAttr.Value ('standalone') = 'yes';
     end;
   CurFinal := StrPos (F, '?>');
   if CurFinal <> nil
     then inc (CurFinal)
     else CurFinal := StrEnd (CurStart) - 1;
-  FCurEncoding := AnsiUpperCase (CurAttr.Value ('encoding'));
-  if FCurEncoding = '' then
-    FCurEncoding := 'UTF-8';   // Default XML Encoding is UTF-8
-  FCurCodePage := EncodingToCodePage (FCurEncoding);
+  if EntityStack.Count = 0 then begin
+    FCurEncoding := FEncoding;
+    FCurCodePage := FCodePage;
+    end
+  else begin
+    FCurEncoding := AnsiUpperCase (CurAttr.Value ('encoding'));
+    if FCurEncoding = '' then
+      FCurEncoding := 'UTF-8';   // Default XML Encoding is UTF-8
+    FCurCodePage := EncodingToCodePage (FCurEncoding);
+    end;
   CurPartType  := ptXmlProlog;
   CurName      := '';
   CurContent   := '';
