@@ -112,13 +112,20 @@ type
     procedure DoWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: TIndyInteger);
     procedure DoWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: TIndyInteger);
     procedure DoWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
+  private
+    // We need to keep a session active to avoid
+    // Socket Error # 10048 Address already in use.
+    FSession: TIdHttp;
   protected
     function Post(const RawData: TXmlString): TXmlString; virtual;
   public
     ConnectTimeout: Integer;
     ReadTimeout: Integer;
+    KeepAlive: Boolean;
     constructor Create; virtual;
     destructor Destroy; override;
+    function GetOrCreateSession: TIdHttp;
+    procedure DestroySession;
     property EndPoint: TXmlString read FEndPoint write FEndPoint;
     property HostName: TXmlString read FHostName write FHostName;
     property HostPort: Integer read FHostPort write FHostPort;
@@ -157,6 +164,7 @@ implementation
 
 {$IFDEF WIN32}
 uses
+  App.Debug,
   Windows;
 {$ENDIF}
 
@@ -373,87 +381,115 @@ function TRpcCaller.Post(const RawData: TXmlString): TXmlString;
 var
   SendStream: TStringStream;
   ResponseStream: TStringStream;
-  Session: TIdHttp;
-  IdSSLIOHandlerSocket: TIdSSLIOHandlerSocketOpenSSL;
+  Session: TIdHTTP;
 begin
   SendStream := nil;
   ResponseStream := nil;
-  IdSSLIOHandlerSocket := nil;
   try
-
     SendStream := TStringStream.Create(System.UTF8Encode(RawData));
     SendStream.Position := 0;
     ResponseStream := TStringStream.Create;
 
-    Session := TIdHttp.Create(nil);
-    Session.OnWork := DoWork;
-    Session.OnWorkBegin := DoWorkBegin;
-    Session.OnWorkEnd := DoWorkEnd;
-    Session.ConnectTimeout := ConnectTimeout;
-    Session.ReadTimeout := ReadTimeout;
+    Session := GetOrCreateSession;
+    Session.Request.ContentLength := SendStream.Size;
 
-    try
-      IdSSLIOHandlerSocket := nil;
-      if (FSSLEnable) then
+    if FSSLEnable then
+    begin
+      Session.Post('https://' + FHostName + ':' + IntToStr(FHostPort) +
+        FEndPoint, SendStream, ResponseStream);
+    end
+      else
+    begin
+      if FHostPort = 80 then
+        Session.Post('http://' + FHostName + FEndPoint, SendStream, ResponseStream)
+      else
       begin
-        IdSSLIOHandlerSocket := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
-        IdSSLIOHandlerSocket.SSLOptions.RootCertFile := FSSLRootCertFile;
-        IdSSLIOHandlerSocket.SSLOptions.CertFile := FSSLCertFile;
-        IdSSLIOHandlerSocket.SSLOptions.KeyFile := FSSLKeyFile;
-        Session.IOHandler := IdSSLIOHandlerSocket;
+        Session.Post('http://' + FHostName + ':' + IntToStr(FHostPort) + FEndPoint, SendStream, ResponseStream);
       end;
-
-      { proxy setup }
-      if (FProxyName <> '') then
-      begin
-        {proxy basic auth}
-        if (FProxyBasicAuth) then
-          Session.ProxyParams.BasicAuthentication := True;
-
-        Session.ProxyParams.ProxyServer := FProxyName;
-        Session.ProxyParams.ProxyPort := FProxyPort;
-        Session.ProxyParams.ProxyUserName := FProxyUserName;
-        Session.ProxyParams.ProxyPassword := FProxyPassword;
-      end;
-
-      { auth setup  FIX ADD hg}
-      if (FUserName <> '') then
-      begin
-        Session.Request.BasicAuthentication := True;
-        Session.Request.Username := FUserName;
-        Session.Request.Password := FPassword;
-      end;
-
-      Session.Request.Accept := '*/*';
-      Session.Request.ContentType := 'text/xml';
-      Session.Request.Connection := 'Keep-Alive';
-      Session.Request.ContentLength := SendStream.Size;
-
-      if FSSLEnable then
-      begin
-        Session.Post('https://' + FHostName + ':' + IntToStr(FHostPort) +
-          FEndPoint, SendStream, ResponseStream);
-      end
-        else
-      begin
-        if FHostPort = 80 then
-          Session.Post('http://' + FHostName + FEndPoint, SendStream, ResponseStream)
-        else
-        begin
-          Session.Post('http://' + FHostName + ':' + IntToStr(FHostPort) + FEndPoint, SendStream, ResponseStream);
-        end;
-      end;
-
-      Result := System.UTF8ToUnicodeString(ResponseStream.DataString);
-    finally
-      Session.Free;
     end;
+
+    Result := System.UTF8ToUnicodeString(ResponseStream.DataString);
+
+    if not KeepAlive then
+      DestroySession;
   finally
-    IdSSLIOHandlerSocket.Free;
     ResponseStream.Free;
     SendStream.Free;
   end;
+end;
 
+{------------------------------------------------------------------------------}
+
+
+function TRpcCaller.GetOrCreateSession: TIdHttp;
+var
+  IdSSLIOHandlerSocket: TIdSSLIOHandlerSocketOpenSSL;
+begin
+
+  if not Assigned(FSession) then
+  begin
+    DebugProcedure();
+    FSession := TIdHttp.Create(nil);
+    FSession.OnWork := DoWork;
+    FSession.OnWorkBegin := DoWorkBegin;
+    FSession.OnWorkEnd := DoWorkEnd;
+    FSession.ConnectTimeout := ConnectTimeout;
+    FSession.ReadTimeout := ReadTimeout;
+
+    // Enfocre 1.1 protocol version
+    //FSession.ProtocolVersion := pv1_1;
+    //FSession.HTTPOptions :=  FSession.HTTPOptions + [hoKeepOrigProtocol];
+
+    if (FSSLEnable) then
+    begin
+      IdSSLIOHandlerSocket := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+      IdSSLIOHandlerSocket.SSLOptions.RootCertFile := FSSLRootCertFile;
+      IdSSLIOHandlerSocket.SSLOptions.CertFile := FSSLCertFile;
+      IdSSLIOHandlerSocket.SSLOptions.KeyFile := FSSLKeyFile;
+      FSession.IOHandler := IdSSLIOHandlerSocket;
+    end;
+
+    { proxy setup }
+    if (FProxyName <> '') then
+    begin
+      {proxy basic auth}
+      if (FProxyBasicAuth) then
+        FSession.ProxyParams.BasicAuthentication := True;
+
+      FSession.ProxyParams.ProxyServer := FProxyName;
+      FSession.ProxyParams.ProxyPort := FProxyPort;
+      FSession.ProxyParams.ProxyUserName := FProxyUserName;
+      FSession.ProxyParams.ProxyPassword := FProxyPassword;
+    end;
+
+    { auth setup  FIX ADD hg}
+    if (FUserName <> '') then
+    begin
+      FSession.Request.BasicAuthentication := True;
+      FSession.Request.Username := FUserName;
+      FSession.Request.Password := FPassword;
+    end;
+
+    FSession.Request.Accept := '*/*';
+    FSession.Request.ContentType := 'text/xml';
+    FSession.Request.Connection := 'keep-alive';
+  end;
+
+  Result := FSession;
+end;
+
+
+procedure TRpcCaller.DestroySession;
+begin
+  if Assigned(FSession) then
+  begin
+    FSession.Disconnect;
+
+    if Assigned(FSession.IOHandler) then
+      FSession.IOHandler.Free;
+
+    FreeAndNil(FSession);
+  end;
 end;
 
 
@@ -467,13 +503,14 @@ begin
   FProxyBasicAuth := False;
   ConnectTimeout := 0;
   ReadTimeout := -1;
+  KeepAlive := True;
 end;
 
 destructor TRpcCaller.Destroy;
 begin
+  DestroySession;
   inherited;
 end;
-
 
 {------------------------------------------------------------------------------}
 
