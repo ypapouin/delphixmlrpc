@@ -52,6 +52,7 @@ uses
   IdHash,
 {$ENDIF}
   IdComponent,
+  IdException,
   {$IFDEF UNICODE}
   LibXmlParserU;
   {$ELSE}
@@ -382,7 +383,11 @@ var
   SendStream: TStringStream;
   ResponseStream: TStringStream;
   Session: TIdHTTP;
+  Retry: Integer;
+const
+  DEFAULT_ATTEMPT_COUNT = 3;
 begin
+  Result := string.Empty;
   SendStream := nil;
   ResponseStream := nil;
   try
@@ -390,25 +395,52 @@ begin
     SendStream.Position := 0;
     ResponseStream := TStringStream.Create;
 
-    Session := GetOrCreateSession;
-    Session.Request.ContentLength := SendStream.Size;
+    Retry := DEFAULT_ATTEMPT_COUNT;
+    while Retry > 0 do
+    begin
+      try
+        Session := GetOrCreateSession;
+        Session.Request.ContentLength := SendStream.Size;
 
-    if FSSLEnable then
-    begin
-      Session.Post('https://' + FHostName + ':' + IntToStr(FHostPort) +
-        FEndPoint, SendStream, ResponseStream);
-    end
-      else
-    begin
-      if FHostPort = 80 then
-        Session.Post('http://' + FHostName + FEndPoint, SendStream, ResponseStream)
-      else
-      begin
-        Session.Post('http://' + FHostName + ':' + IntToStr(FHostPort) + FEndPoint, SendStream, ResponseStream);
+        if FSSLEnable then
+        begin
+          Session.Post('https://' + FHostName + ':' + IntToStr(FHostPort) +
+            FEndPoint, SendStream, ResponseStream);
+        end
+          else
+        begin
+          if FHostPort = 80 then
+            Session.Post('http://' + FHostName + FEndPoint, SendStream, ResponseStream)
+          else
+          begin
+            Session.Post('http://' + FHostName + ':' + IntToStr(FHostPort) + FEndPoint, SendStream, ResponseStream);
+          end;
+        end;
+
+        if KeepAlive then
+        begin
+          // http://codeverge.com/embarcadero.delphi.winsock/-connection-closed-gracefully-prob/1074540
+          // Send a keepalive every 100ms after 1s of being idle
+          Session.Socket.Binding.SetKeepAliveValues(True, 1000, 100);
+        end;
+                
+        Result := System.UTF8ToUnicodeString(ResponseStream.DataString);
+
+        // Set the retry Flag to 0 to exit the loop since result was correctly
+        // assigned from response
+        Retry := 0;
+        
+      // If the server closed our connection, it will be catched there.
+      // We cannot rely on current response so retry with a new query
+      // A counter is added to avoid a 'possible' infinite loop.
+      except on E: EIdConnClosedGracefully do
+        begin
+          Session.Disconnect(False);
+          Session.IOHandler.InputBuffer.Clear();
+          Retry := Retry - 1;
+        end;
       end;
     end;
-
-    Result := System.UTF8ToUnicodeString(ResponseStream.DataString);
 
     if not KeepAlive then
       DestroySession;
@@ -436,9 +468,9 @@ begin
     FSession.ConnectTimeout := ConnectTimeout;
     FSession.ReadTimeout := ReadTimeout;
 
-    // Enfocre 1.1 protocol version
-    //FSession.ProtocolVersion := pv1_1;
-    //FSession.HTTPOptions :=  FSession.HTTPOptions + [hoKeepOrigProtocol];
+    // Enforce 1.1 protocol version
+    FSession.ProtocolVersion := pv1_1;
+    FSession.HTTPOptions :=  FSession.HTTPOptions + [hoKeepOrigProtocol];
 
     if (FSSLEnable) then
     begin
