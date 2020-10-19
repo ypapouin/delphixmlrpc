@@ -1,25 +1,24 @@
-
-{*******************************************************}
-{                                                       }
-{ XML-RPC Library for Delphi, Kylix and DWPL (DXmlRpc)  }
-{ XmlRpcClient.pas                                      }
-{                                                       }
-{ for Delphi 6, 7, XE and Lazarus                       }
-{ Release 2.0.0                                         }
-{ Copyright (c) 2001-2003 by Team-DelphiXml-Rpc         }
-{ e-mail: team-dxmlrpc@dwp42.org                        }
-{ www: http://sourceforge.net/projects/delphixml-rpc/   }
-{                                                       }
-{ The initial developer of the code is                  }
-{   Clifford E. Baeseman, codepunk@codepunk.com         }
-{                                                       }
-{ This file may be distributed and/or modified under    }
-{ the terms of the GNU Lesser General Public License    }
-{ (LGPL) version 2.1 as published by the Free Software  }
-{ Foundation and appearing in the included file         }
-{ license.txt.                                          }
-{                                                       }
-{*******************************************************}
+{ ******************************************************* }
+{ }
+{ XML-RPC Library for Delphi, Kylix and DWPL (DXmlRpc) }
+{ XmlRpcClient.pas }
+{ }
+{ for Delphi 6, 7, XE and Lazarus }
+{ Release 2.0.0 }
+{ Copyright (c) 2001-2003 by Team-DelphiXml-Rpc }
+{ e-mail: team-dxmlrpc@dwp42.org }
+{ www: http://sourceforge.net/projects/delphixml-rpc/ }
+{ }
+{ The initial developer of the code is }
+{ Clifford E. Baeseman, codepunk@codepunk.com }
+{ }
+{ This file may be distributed and/or modified under }
+{ the terms of the GNU Lesser General Public License }
+{ (LGPL) version 2.1 as published by the Free Software }
+{ Foundation and appearing in the included file }
+{ license.txt. }
+{ }
+{ ******************************************************* }
 {
   $Header: /cvsroot-fuse/delphixml-rpc/dxmlrpc/source/XmlRpcClient.pas,v 1.2 2004/04/20 20:35:51 iwache Exp $
   ----------------------------------------------------------------------------
@@ -44,7 +43,12 @@ interface
 {$INCLUDE 'indy.inc'}
 
 uses
-  SysUtils, Classes, Contnrs, XmlRpcTypes, XmlRpcCommon, XmlRpcUnicode,
+  SysUtils,
+  Classes,
+  Contnrs,
+  XmlRpcTypes,
+  XmlRpcCommon,
+  XmlRpcUnicode,
   IdHTTP,
   IdSSLOpenSSL,
 {$IFDEF INDY9}
@@ -53,20 +57,19 @@ uses
 {$ENDIF}
   IdComponent,
   IdException,
-  {$IFDEF UNICODE}
+{$IFDEF UNICODE}
   LibXmlParserU;
-  {$ELSE}
-  LibXmlParser;
-  {$ENDIF}
+{$ELSE}
+LibXmlParser;
+{$ENDIF}
 
 type
 
 {$IFDEF INDY10}
-    TIndyInteger = Int64;
+  TIndyInteger = Int64;
 {$ELSE}
-    TIndyInteger = Integer;
+  TIndyInteger = Integer;
 {$ENDIF}
-
 
   TRpcClientParser = class(TObject)
   private
@@ -77,7 +80,7 @@ type
     FLastTag: TXmlString;
     FFixEmptyStrings: Boolean;
     procedure PushStructName(const Name: TXmlString);
-    function PopStructName: TXmlString ;
+    function PopStructName: TXmlString;
   public
     constructor Create;
     destructor Destroy; override;
@@ -87,7 +90,7 @@ type
     procedure EndTag;
     procedure DataTag;
     property FixEmptyStrings: Boolean read FFixEmptyStrings
-        write FFixEmptyStrings;
+      write FFixEmptyStrings;
   end;
 
   TRpcCaller = class(TRpcClientParser)
@@ -110,8 +113,10 @@ type
     FOnWork: TWorkEvent;
     FOnWorkBegin: TWorkBeginEvent;
     FOnWorkEnd: TWorkEndEvent;
-    procedure DoWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: TIndyInteger);
-    procedure DoWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: TIndyInteger);
+    procedure DoWork(ASender: TObject; AWorkMode: TWorkMode;
+      AWorkCount: TIndyInteger);
+    procedure DoWorkBegin(ASender: TObject; AWorkMode: TWorkMode;
+      AWorkCountMax: TIndyInteger);
     procedure DoWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
   private
     // We need to keep a session active to avoid
@@ -139,17 +144,19 @@ type
     property ProxyPassword: TXmlString read FProxyPassword write FProxyPassword;
     property ProxyBasicAuth: Boolean read FProxyBasicAuth write FProxyBasicAuth;
     property SSLEnable: Boolean read FSSLEnable write FSSLEnable;
-    property SSLRootCertFile: TXmlString read FSSLRootCertFile write
-      FSSLRootCertFile;
+    property SSLRootCertFile: TXmlString read FSSLRootCertFile
+      write FSSLRootCertFile;
     property SSLCertFile: TXmlString read FSSLCertFile write FSSLCertFile;
     property SSLKeyFile: TXmlString read FSSLKeyFile write FSSLKeyFile;
     property OnWork: TWorkEvent read FOnWork write FOnWork;
     property OnWorkBegin: TWorkBeginEvent read FOnWorkBegin write FOnWorkBegin;
     property OnWorkEnd: TWorkEndEvent read FOnWorkEnd write FOnWorkEnd;
 {$IFDEF INDY9}
-    function Execute(RpcFunction: IRpcFunction; Ttl: Integer): IRpcResult; overload;
+    function Execute(RpcFunction: IRpcFunction; Ttl: Integer)
+      : IRpcResult; overload;
 {$ENDIF}
-    function Execute(const XmlRequest: TXmlString): IRpcResult; overload; virtual;
+    function Execute(const XmlRequest: TXmlString): IRpcResult;
+      overload; virtual;
     function Execute(Value: IRpcFunction): IRpcResult; overload;
     procedure DeleteOldCache(Ttl: Integer);
   end;
@@ -164,14 +171,14 @@ const
 implementation
 
 {$IFDEF WIN32}
+
 uses
   App.Debug,
   Windows;
 {$ENDIF}
-
-{------------------------------------------------------------------------------}
-{ RPC PARSER CONSTRUCTOR                                                       }
-{------------------------------------------------------------------------------}
+{ ------------------------------------------------------------------------------ }
+{ RPC PARSER CONSTRUCTOR }
+{ ------------------------------------------------------------------------------ }
 
 constructor TRpcClientParser.Create;
 begin
@@ -192,20 +199,20 @@ end;
 procedure TRpcClientParser.PushStructName(const Name: TXmlString);
 begin
   FStructNames.Add(Name);
-end ;
+end;
 
-function TRpcClientParser.PopStructName: TXmlString ;
-var 
-  I: Integer ;
+function TRpcClientParser.PopStructName: TXmlString;
+var
+  I: Integer;
 begin
   I := FStructNames.Count - 1;
   Result := fStructNames[I];
   FStructNames.Delete(I);
-end ;
+end;
 
-{------------------------------------------------------------------------------}
-{ RETURN THE RESULT OBJECT  tastes great less filling ;)                       }
-{------------------------------------------------------------------------------}
+{ ------------------------------------------------------------------------------ }
+{ RETURN THE RESULT OBJECT  tastes great less filling ;) }
+{ ------------------------------------------------------------------------------ }
 
 procedure TRpcClientParser.Parse(Data: TXmlString);
 begin
@@ -214,13 +221,13 @@ begin
   { empty string fix }
   if (FFixEmptyStrings) then
     Data := FixEmptyString(Data);
-  {simple error check}
-  if not (Pos('xml', Data) > 0) then
+  { simple error check }
+  if not(Pos('xml', Data) > 0) then
   begin
     FRpcResult.SetError(ERROR_INVALID_RESPONSE, ERROR_INVALID_RESPONSE_MESSAGE);
     Exit;
   end;
-  {empty response}
+  { empty response }
   if (Trim(Data) = '') then
   begin
     FRpcResult.SetError(ERROR_EMPTY_RESULT, ERROR_EMPTY_RESULT_MESSAGE);
@@ -231,10 +238,9 @@ begin
     FParser := TXMLParser.Create;
   if not Assigned(FStack) then
     FStack := TObjectStack.Create;
-  //CLINTON - 16/9/2003  
-  if not Assigned(FStructNames) then  
+  //CLINTON - 16/9/2003
+  if not Assigned(FStructNames) then
     FStructNames := TXmlStringList.Create;
-    
 
   FRpcResult.Clear;
   FParser.LoadFromString(Data);
@@ -255,14 +261,14 @@ begin
   end;
 end;
 
-{------------------------------------------------------------------------------}
-{ CACHED WEB CALL Time To Live calculated in minutes                           }
-{------------------------------------------------------------------------------}
+{ ------------------------------------------------------------------------------ }
+{ CACHED WEB CALL Time To Live calculated in minutes }
+{ ------------------------------------------------------------------------------ }
 
 {$IFDEF INDY9}
 
-function TRpcCaller.Execute(RpcFunction: IRpcFunction; Ttl: Integer):
-    IRpcResult;
+function TRpcCaller.Execute(RpcFunction: IRpcFunction; Ttl: Integer)
+  : IRpcResult;
 var
   Strings: TXmlStrings;
   XmlResult: TXmlString;
@@ -274,11 +280,11 @@ begin
   HashMessageDigest := TIdHashMessageDigest5.Create;
   try
     { determine the md5 digest hash of the request }
-    {$IFDEF INDY10}
+{$IFDEF INDY10}
     Hash := HashStringMD5AsHex(XmlRequest);
-    {$ELSE}
+{$ELSE}
     Hash := Hash128AsHex(HashMessageDigest.HashValue(XmlRequest));
-    {$ENDIF}
+{$ENDIF}
   finally
     HashMessageDigest.Free;
   end;
@@ -312,10 +318,9 @@ begin
 end;
 
 {$ENDIF}
-
-{------------------------------------------------------------------------------}
-{ NON - CACHED WEB CALL with IFunction parameter                                                     }
-{------------------------------------------------------------------------------}
+{ ------------------------------------------------------------------------------ }
+{ NON - CACHED WEB CALL with IFunction parameter }
+{ ------------------------------------------------------------------------------ }
 
 function TRpcCaller.Execute(Value: IRpcFunction): IRpcResult;
 begin
@@ -323,21 +328,48 @@ begin
   Value.Clear;
 end;
 
-{------------------------------------------------------------------------------}
-{ NON - CACHED WEB CALL with XML string parameter                                                     }
-{------------------------------------------------------------------------------}
+{ ------------------------------------------------------------------------------ }
+{ NON - CACHED WEB CALL with XML string parameter }
+{ ------------------------------------------------------------------------------ }
 function TRpcCaller.Execute(const XmlRequest: TXmlString): IRpcResult;
 var
   XmlResponse: TXmlString;
+  Retry: Integer;
+const
+  DEFAULT_ATTEMPT_COUNT = 3;
 begin
-  XmlResponse := Post(XmlRequest);
-  Parse(XmlResponse);
-  Result := FRpcResult;
+  Retry := DEFAULT_ATTEMPT_COUNT;
+  while Retry > 0 do
+  begin
+    XmlResponse := Post(XmlRequest);
+    Parse(XmlResponse);
+    Result := FRpcResult;
+
+    if Result.IsError then
+    begin
+      if (Result.ErrorCode = ERROR_EMPTY_RESULT) and
+        (Result.ErrorMsg = ERROR_EMPTY_RESULT_MESSAGE) then
+      begin
+        Retry := Retry - 1;
+        continue;
+      end;
+
+      if (Result.ErrorCode = ERROR_INVALID_RESPONSE) and
+        (Result.ErrorMsg = ERROR_INVALID_RESPONSE_MESSAGE) then
+      begin
+        Retry := Retry - 1;
+        continue;
+      end;
+    end;
+
+    // Set the retry Flag to 0 to exit the loop since result seems correct
+    Retry := 0;
+  end;
 end;
 
-{------------------------------------------------------------------------------}
-{ DELETE ALL TEMPORARY EXPIRED DATA                                            }
-{------------------------------------------------------------------------------}
+{ ------------------------------------------------------------------------------ }
+{ DELETE ALL TEMPORARY EXPIRED DATA }
+{ ------------------------------------------------------------------------------ }
 
 procedure TRpcCaller.DeleteOldCache(Ttl: Integer);
 var
@@ -374,9 +406,9 @@ begin
     OnWorkEnd(Self, AWorkMode);
 end;
 
-{------------------------------------------------------------------------------}
-{ POST THE REQUEST TO THE RPC SERVER                                           }
-{------------------------------------------------------------------------------}
+{ ------------------------------------------------------------------------------ }
+{ POST THE REQUEST TO THE RPC SERVER }
+{ ------------------------------------------------------------------------------ }
 
 function TRpcCaller.Post(const RawData: TXmlString): TXmlString;
 var
@@ -407,13 +439,15 @@ begin
           Session.Post('https://' + FHostName + ':' + IntToStr(FHostPort) +
             FEndPoint, SendStream, ResponseStream);
         end
-          else
+        else
         begin
           if FHostPort = 80 then
-            Session.Post('http://' + FHostName + FEndPoint, SendStream, ResponseStream)
+            Session.Post('http://' + FHostName + FEndPoint, SendStream,
+              ResponseStream)
           else
           begin
-            Session.Post('http://' + FHostName + ':' + IntToStr(FHostPort) + FEndPoint, SendStream, ResponseStream);
+            Session.Post('http://' + FHostName + ':' + IntToStr(FHostPort) +
+              FEndPoint, SendStream, ResponseStream);
           end;
         end;
 
@@ -423,17 +457,18 @@ begin
           // Send a keepalive every 100ms after 1s of being idle
           Session.Socket.Binding.SetKeepAliveValues(True, 1000, 100);
         end;
-                
+
         Result := System.UTF8ToUnicodeString(ResponseStream.DataString);
 
         // Set the retry Flag to 0 to exit the loop since result was correctly
         // assigned from response
         Retry := 0;
-        
-      // If the server closed our connection, it will be catched there.
-      // We cannot rely on current response so retry with a new query
-      // A counter is added to avoid a 'possible' infinite loop.
-      except on E: EIdConnClosedGracefully do
+
+        // If the server closed our connection, it will be catched there.
+        // We cannot rely on current response so retry with a new query
+        // A counter is added to avoid a 'possible' infinite loop.
+      except
+        on E: EIdConnClosedGracefully do
         begin
           Session.Disconnect(False);
           Session.IOHandler.InputBuffer.Clear();
@@ -450,8 +485,7 @@ begin
   end;
 end;
 
-{------------------------------------------------------------------------------}
-
+{ ------------------------------------------------------------------------------ }
 
 function TRpcCaller.GetOrCreateSession: TIdHttp;
 var
@@ -470,7 +504,7 @@ begin
 
     // Enforce 1.1 protocol version
     FSession.ProtocolVersion := pv1_1;
-    FSession.HTTPOptions :=  FSession.HTTPOptions + [hoKeepOrigProtocol];
+    FSession.HTTPOptions := FSession.HTTPOptions + [hoKeepOrigProtocol];
 
     if (FSSLEnable) then
     begin
@@ -484,7 +518,7 @@ begin
     { proxy setup }
     if (FProxyName <> '') then
     begin
-      {proxy basic auth}
+      { proxy basic auth }
       if (FProxyBasicAuth) then
         FSession.ProxyParams.BasicAuthentication := True;
 
@@ -494,7 +528,7 @@ begin
       FSession.ProxyParams.ProxyPassword := FProxyPassword;
     end;
 
-    { auth setup  FIX ADD hg}
+    { auth setup  FIX ADD hg }
     if (FUserName <> '') then
     begin
       FSession.Request.BasicAuthentication := True;
@@ -510,7 +544,6 @@ begin
   Result := FSession;
 end;
 
-
 procedure TRpcCaller.DestroySession;
 begin
   if Assigned(FSession) then
@@ -524,8 +557,7 @@ begin
   end;
 end;
 
-
-{------------------------------------------------------------------------------}
+{ ------------------------------------------------------------------------------ }
 
 constructor TRpcCaller.Create;
 begin
@@ -544,7 +576,7 @@ begin
   inherited;
 end;
 
-{------------------------------------------------------------------------------}
+{ ------------------------------------------------------------------------------ }
 
 procedure TRpcClientParser.DataTag;
 var
@@ -555,33 +587,34 @@ begin
   Data := FParser.CurContent;
 
   { avoid to skip empty string values inside a struct }
-  if ((FLastTag = 'STRING') and (FStructNames.Count > 0) and (not (Trim(Data) <> ''))) then
+  if ((FLastTag = 'STRING') and (FStructNames.Count > 0) and
+    (not(Trim(Data) <> ''))) then
     Data := '[NULL]';
-    
+
   { should never be empty }
-  if not (Trim(Data) <> '') then
+  if not(Trim(Data) <> '') then
     Exit;
   { last tag empty ignore }
   if (FLastTag = '') then
     Exit;
 
-  { struct name store for next pass}
+  { struct name store for next pass }
   if (FLastTag = 'NAME') then
-    if not (Trim(Data) <> '') then
+    if not(Trim(Data) <> '') then
       Exit;
 
-  {this will handle the default
-   string pain in the ass}
+  { this will handle the default
+    string pain in the ass }
   if FLastTag = 'VALUE' then
     FLastTag := 'STRING';
 
-  {ugly null string hack}
+  { ugly null string hack }
   if (FLastTag = 'STRING') then
     if (Data = '[NULL]') then
       Data := '';
 
-  {if the tag was a struct name we will
-   just store it for the next pass    }
+  { if the tag was a struct name we will
+    just store it for the next pass }
   if (FLastTag = 'NAME') then
   begin
     // CLINTON 16/9/2003
@@ -627,7 +660,7 @@ begin
         TRpcArray(FStack.Peek).LoadRawData(dtBoolean, Data);
     end;
 
-  {here we are just getting a single value}
+  { here we are just getting a single value }
   if FStack.Count = 0 then
   begin
     if (FLastTag = 'STRING') then
@@ -649,7 +682,7 @@ begin
   FLastTag := '';
 end;
 
-{------------------------------------------------------------------------------}
+{ ------------------------------------------------------------------------------ }
 
 procedure TRpcClientParser.EndTag;
 var
@@ -659,12 +692,12 @@ var
 begin
   Tag := GetTag;
 
-  {if we get a struct closure then
-   we pop it off the stack do a peek on
-   the item before it and add  it}
+  { if we get a struct closure then
+    we pop it off the stack do a peek on
+    the item before it and add  it }
   if (Tag = 'STRUCT') then
   begin
-    {last item is a struct}
+    { last item is a struct }
     if (TObject(FStack.Peek) is TRpcStruct) then
       if (FStack.Count > 0) then
       begin
@@ -681,7 +714,7 @@ begin
         Exit;
       end;
 
-    {last item is a array}
+    { last item is a array }
     if (TObject(FStack.Peek) is TRpcArray) then
       if (FStack.Count > 0) then
       begin
@@ -718,8 +751,8 @@ begin
       end;
   end;
 
-  {if we get the params closure then we will pull the array
-   and or struct and add it to the final result then clean up}
+  { if we get the params closure then we will pull the array
+    and or struct and add it to the final result then clean up }
   if (Tag = 'PARAMS') then
     if (FStack.Count > 0) then
     begin
@@ -729,7 +762,7 @@ begin
         FRpcResult.AsArray := TRpcArray(FStack.Pop);
 
       //CLINTON 16/9/2003
-      {free the stack and the stack of the Struct names}
+      { free the stack and the stack of the Struct names }
       FreeAndNil(FStack);
       FreeAndNil(FStructNames);
     end;
@@ -741,7 +774,7 @@ begin
   Result := UpperCase(Trim(Result));
 end;
 
-{------------------------------------------------------------------------------}
+{ ------------------------------------------------------------------------------ }
 
 procedure TRpcClientParser.StartTag;
 var
