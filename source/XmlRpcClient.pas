@@ -57,6 +57,7 @@ uses
 {$ENDIF}
   IdComponent,
   IdException,
+  IdStack,
 {$IFDEF UNICODE}
   LibXmlParserU;
 {$ELSE}
@@ -473,6 +474,16 @@ begin
           Session.Disconnect(False);
           Session.IOHandler.InputBuffer.Clear();
           Retry := Retry - 1;
+          if Retry <= 0 then
+            raise;
+        end;
+        on E: EIdSocketError do
+        begin
+          Session.Disconnect(False);
+          Session.IOHandler.InputBuffer.Clear();
+          Retry := Retry - 1; 
+          if Retry <= 0 then
+            raise;
         end;
       end;
     end;
@@ -494,7 +505,7 @@ begin
 
   if not Assigned(FSession) then
   begin
-    DebugProcedure();
+    //DebugProcedure();
     FSession := TIdHttp.Create(nil);
     FSession.OnWork := DoWork;
     FSession.OnWorkBegin := DoWorkBegin;
