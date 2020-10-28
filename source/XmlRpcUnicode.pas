@@ -11,6 +11,7 @@ type
     TXmlStrings = TStrings;
     TXmlStringList = TStringList;
     TXmlString = String;
+    TXmlStringArray = array of TXmlString;
     TXmlChar = Char;
     PXmlChar = PChar;
 

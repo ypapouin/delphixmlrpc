@@ -481,7 +481,7 @@ begin
         begin
           Session.Disconnect(False);
           Session.IOHandler.InputBuffer.Clear();
-          Retry := Retry - 1; 
+          Retry := Retry - 1;
           if Retry <= 0 then
             raise;
         end;
@@ -510,8 +510,6 @@ begin
     FSession.OnWork := DoWork;
     FSession.OnWorkBegin := DoWorkBegin;
     FSession.OnWorkEnd := DoWorkEnd;
-    FSession.ConnectTimeout := ConnectTimeout;
-    FSession.ReadTimeout := ReadTimeout;
 
     // Enforce 1.1 protocol version
     FSession.ProtocolVersion := pv1_1;
@@ -551,6 +549,10 @@ begin
     FSession.Request.ContentType := 'text/xml';
     FSession.Request.Connection := 'keep-alive';
   end;
+
+  // Always update timeouts
+  FSession.ConnectTimeout := ConnectTimeout;
+  FSession.ReadTimeout := ReadTimeout;
 
   Result := FSession;
 end;
