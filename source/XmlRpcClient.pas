@@ -506,7 +506,7 @@ begin
   if not Assigned(FSession) then
   begin
     //DebugProcedure();
-    FSession := TIdHttp.Create(nil);
+    FSession := TIdHttp.Create();
     FSession.OnWork := DoWork;
     FSession.OnWorkBegin := DoWorkBegin;
     FSession.OnWorkEnd := DoWorkEnd;
@@ -517,7 +517,7 @@ begin
 
     if (FSSLEnable) then
     begin
-      IdSSLIOHandlerSocket := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+      IdSSLIOHandlerSocket := TIdSSLIOHandlerSocketOpenSSL.Create();
       IdSSLIOHandlerSocket.SSLOptions.RootCertFile := FSSLRootCertFile;
       IdSSLIOHandlerSocket.SSLOptions.CertFile := FSSLCertFile;
       IdSSLIOHandlerSocket.SSLOptions.KeyFile := FSSLKeyFile;

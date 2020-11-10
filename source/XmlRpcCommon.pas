@@ -267,7 +267,7 @@ var
 begin
   StringStream := TStringStream.Create(Text);
   StringStream.SaveToStream(Stream);
-  StringStream.Free;
+  FreeAndNil(StringStream);
 end;
 
 
