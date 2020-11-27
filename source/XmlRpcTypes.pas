@@ -866,11 +866,13 @@ end;
 
 procedure TRpcCustomArray.AddItem(Value: IRpcStruct);
 begin
+  Assert(Assigned(Value));
   InternalAddItem.AsStruct := Value;
 end;
 
 procedure TRpcCustomArray.AddItem(Value: IRpcArray);
 begin
+  Assert(Assigned(Value));
   InternalAddItem.AsArray := Value;
 end;
 
@@ -1111,6 +1113,7 @@ end;
 
 procedure TRpcStruct.AddItem(const Key: TXmlString; Value: IRpcArray);
 begin
+  Assert(Assigned(Value));
   InternalAddItem(Key).AsArray := Value;
 end;
 
@@ -1126,6 +1129,7 @@ end;
 
 procedure TRpcStruct.AddItem(const Key: TXmlString; Value: IRpcStruct);
 begin
+  Assert(Assigned(Value));
   InternalAddItem(Key).AsStruct := Value;
 end;
 
