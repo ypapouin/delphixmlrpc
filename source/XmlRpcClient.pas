@@ -480,7 +480,8 @@ begin
         on E: EIdSocketError do
         begin
           Session.Disconnect(False);
-          Session.IOHandler.InputBuffer.Clear();
+          if Assigned(Session.IOHandler) then
+            Session.IOHandler.InputBuffer.Clear();
           Retry := Retry - 1;
           if Retry <= 0 then
             raise;
