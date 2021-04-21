@@ -594,7 +594,7 @@ begin
   if (FDataType = dtArray) then
     Result := FArray
   else
-    raise EXmlRpcError.Create('Item is not a array type')
+    raise EXmlRpcError.Create('Item is not a array type: ' + IntToStr(Ord(FDataType)))
 end;
 
 procedure TRpcCustomItem.SetAsArray(Value: IRpcArray);
