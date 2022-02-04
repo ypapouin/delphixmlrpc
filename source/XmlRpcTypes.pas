@@ -253,6 +253,8 @@ type
     procedure AddItemDateTime(Value: TDateTime);
     procedure Clear;
     function Count: Integer;
+    function Contains(Value: Integer): Boolean; overload;
+    function Contains(Value: Double): Boolean; overload;
     procedure Delete(Index: Integer);
     property Items[Index: Integer]: TRpcArrayItem read GetItems write SetItems;
         default;
@@ -281,6 +283,8 @@ type
     procedure AddItemDateTime(Value: TDateTime);
     procedure Clear; virtual;
     function Count: Integer;
+    function Contains(Value: Integer): Boolean; overload;
+    function Contains(Value: Double): Boolean; overload;
     procedure Delete(Index: Integer);
     property Items[Index: Integer]: TRpcArrayItem read GetItems write SetItems;
         default;
@@ -912,6 +916,39 @@ end;
 function TRpcCustomArray.Count: Integer;
 begin
   Result := FList.Count;
+end;
+
+
+function TRpcCustomArray.Contains(Value: Integer): Boolean;
+var
+ i:integer;
+begin
+  Result := False;
+  for i:= 0 to FList.Count-1 do
+  begin
+    if (FList[i] as TRpcArrayItem).IsInteger then
+      if (FList[i] as TRpcArrayItem).AsInteger = Value then
+      begin
+        Result := True;
+        break;
+      end;
+  end;
+end;
+
+function TRpcCustomArray.Contains(Value: Double): Boolean;
+var
+ i:integer;
+begin
+  Result := False;
+  for i:= 0 to FList.Count-1 do
+  begin
+    if (FList[i] as TRpcArrayItem).IsFloat then
+      if (FList[i] as TRpcArrayItem).AsFloat = Value then
+      begin
+        Result := True;
+        break;
+      end;
+  end;
 end;
 
 procedure TRpcCustomArray.Delete(Index: Integer);
