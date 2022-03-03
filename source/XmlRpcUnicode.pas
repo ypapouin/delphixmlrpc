@@ -5,13 +5,13 @@ unit XmlRpcUnicode;
 interface
 
 uses
-  Windows, Classes, JclAnsiStrings, JclStrings;
+  Classes, XmlRpcAnsiStrings;
 
 type
 
 {$IFDEF UNICODE}
-    TXmlStrings = TJclAnsiStrings;
-    TXmlStringList = TJclAnsiStringList;
+    TXmlStrings = TAnsiStringList;
+    TXmlStringList = TAnsiStringList;
     TXmlString = AnsiString;
     TXmlChar = AnsiChar;
     PXmlChar = PAnsiChar;
