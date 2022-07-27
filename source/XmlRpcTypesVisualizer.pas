@@ -10,7 +10,9 @@ uses
   Classes,
   Vcl.Forms,
   SysUtils,
+{$IFDEF DEBUG}
   Winapi.Windows,
+{$ENDIF}
   ToolsAPI;
 
 resourcestring
@@ -104,7 +106,9 @@ procedure TDebuggerDXmlRpcVisualizer.EvaluateComplete(const ExprStr,
   ResultStr: string; CanModify: Boolean; ResultAddress, ResultSize: Cardinal;
   ReturnCode: Integer);
 begin
+{$IFDEF DEBUG}
   OutputDebugString('EvaluateComplete');
+{$ENDIF}
   EvaluateComplete(ExprStr, ResultStr, CanModify, TOTAAddress(ResultAddress),
     LongWord(ResultSize), ReturnCode);
 end;
@@ -116,7 +120,9 @@ begin
   FCompleted := True;
   if ReturnCode = 0 then
     FDeferredResult := ResultStr;
+{$IFDEF DEBUG}
   OutputDebugString(PChar(' [+] EvaluateComplete:' + IntToStr(ReturnCode)));
+{$ENDIF}
 end;
 
 procedure TDebuggerDXmlRpcVisualizer.ThreadNotify(Reason: TOTANotifyReason);
@@ -141,8 +147,10 @@ var
   function FormatResult(const LEvalResult: string; DTType: TTypeType;
     out ResStr: string): Boolean;
   begin
+{$IFDEF DEBUG}
     OutputDebugString(PChar('GetReplacementValue:FormatResult-LEvalResult: ' +
       LEvalResult));
+{$ENDIF}
     Result := True;
     try
       case DTType of
@@ -167,12 +175,16 @@ var
     ResStr := StringReplace(ResStr, '#$D', #13, [rfIgnoreCase, rfReplaceAll]);
     ResStr := StringReplace(ResStr, '#$A', #10, [rfIgnoreCase, rfReplaceAll]);
 
+{$IFDEF DEBUG}
     OutputDebugString(PChar('GetReplacementValue:FormatResult-ResStr: '
       + ResStr));
+{$ENDIF}
   end;
 
 begin
+{$IFDEF DEBUG}
   OutputDebugString(PChar('GetReplacementValue:' + TypeName));
+{$ENDIF}
 
   TypeType := TTypeType(-1);
   for I := Low(RpcVisualizerTypes) to High(RpcVisualizerTypes) do
@@ -183,7 +195,9 @@ begin
       Break;
     end;
   end;
+{$IFDEF DEBUG}
   OutputDebugString(PChar('TypeType:' + IntToStr(Ord(TypeType))));
+{$ENDIF}
 
   Result := EvalResult;
   if Supports(BorlandIDEServices, IOTADebuggerServices, DebugSvcs) then
@@ -197,62 +211,84 @@ begin
       EvalRes := CurThread.Evaluate(EvalExp, @ResultStr, Length(ResultStr),
         CanModify, eseAll, '', ResultAddr, ResultSize, ResultVal, '', 0);
 
+{$IFDEF DEBUG}
       OutputDebugString(PChar('+ EvalExp:' + EvalExp));
       OutputDebugString(PChar('+ EvalRes:' + IntToStr(Ord(EvalRes))));
       OutputDebugString(PChar('+ ResultStr:' + ResultStr));
+{$ENDIF}
       if EvalRes = erOK then
       begin
+{$IFDEF DEBUG}
         OutputDebugString(PChar('EvalRes:erOK'));
+{$ENDIF}
         if not FormatResult(ResultStr, TypeType, Result) then
           Result := EvalResult;
       end
       else if EvalRes = erDeferred then
       begin
+{$IFDEF DEBUG}
         OutputDebugString(PChar('EvalRes:erDeferred'));
+{$ENDIF}
         FCompleted := False;
         FDeferredResult := '';
         FNotifierIndex := CurThread.AddNotifier(Self);
         while not FCompleted do
         begin
           DebugSvcs.ProcessDebugEvents;
+{$IFDEF DEBUG}
           OutputDebugString(PChar('not FCompleted'));
+{$ENDIF}
         end;
         CurThread.RemoveNotifier(FNotifierIndex);
         FNotifierIndex := -1;
+{$IFDEF DEBUG}
         OutputDebugString(PChar('FDeferredResult=' + FDeferredResult));
+{$ENDIF}
         if (FDeferredResult = '') or not FormatResult(FDeferredResult, TypeType,
           Result) then
           Result := EvalResult;
       end
       else if EvalRes = erError then
       begin
+{$IFDEF DEBUG}
         OutputDebugString(PChar('EvalRes:erError'));
+{$ENDIF}
       end
       else if EvalRes = erBusy then
       begin
+{$IFDEF DEBUG}
         OutputDebugString(PChar('EvalRes:erBusy'));
+{$ENDIF}
       end;
 
     end
     else
     begin
+{$IFDEF DEBUG}
       OutputDebugString(PChar('CurThread is nil'));
+{$ENDIF}
     end;
   end
   else
   begin
+{$IFDEF DEBUG}
     OutputDebugString(PChar('CurProcess is nil'));
+{$ENDIF}
   end;
 
+{$IFDEF DEBUG}
   OutputDebugString(PChar('GetReplacementValueResult:' + TypeName + ' > '
     + Result));
+{$ENDIF}
 
 end;
 
 function TDebuggerDXmlRpcVisualizer.GetSupportedTypeCount: Integer;
 begin
   Result := Length(RpcVisualizerTypes);
+{$IFDEF DEBUG}
   OutputDebugString(PChar('GetSupportedTypeCount:' + IntToStr(Result)));
+{$ENDIF}
 end;
 
 procedure TDebuggerDXmlRpcVisualizer.GetSupportedType(Index: Integer;
@@ -260,25 +296,33 @@ procedure TDebuggerDXmlRpcVisualizer.GetSupportedType(Index: Integer;
 begin
   AllDescendants := False;
   TypeName := RpcVisualizerTypes[Index].TypeName;
+{$IFDEF DEBUG}
   OutputDebugString(PChar('GetSupportedType:' + TypeName));
+{$ENDIF}
 end;
 
 function TDebuggerDXmlRpcVisualizer.GetVisualizerDescription: string;
 begin
   Result := sRpcVisualizerDescription;
+{$IFDEF DEBUG}
   OutputDebugString(PChar('GetVisualizerDescription:' + Result));
+{$ENDIF}
 end;
 
 function TDebuggerDXmlRpcVisualizer.GetVisualizerIdentifier: string;
 begin
   Result := ClassName;
+{$IFDEF DEBUG}
   OutputDebugString(PChar('GetVisualizerIdentifier:' + Result));
+{$ENDIF}
 end;
 
 function TDebuggerDXmlRpcVisualizer.GetVisualizerName: string;
 begin
   Result := sRpcVisualizerName;
+{$IFDEF DEBUG}
   OutputDebugString(PChar('GetVisualizerName:' + Result));
+{$ENDIF}
 end;
 
 var
