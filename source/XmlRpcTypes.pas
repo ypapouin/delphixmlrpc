@@ -64,17 +64,22 @@ unit XmlRpcTypes;
 interface
 
 uses
-  SysUtils, Classes, Contnrs, DIMime, XmlRpcCommon, XmlRpcUnicode;
+  SysUtils,
+  Classes,
+  Contnrs,
+  DIMime,
+  XmlRpcCommon,
+  XmlRpcUnicode;
 
 type
   IRpcArray = interface;
   IRpcStruct = interface;
 
   TDataType = (dtFloat, dtInteger, dtString, dtBoolean, dtDateTime, dtBase64,
-      dtStruct, dtArray, dtError, dtNone, dtName, dtValue);
+    dtStruct, dtArray, dtError, dtNone, dtName, dtValue);
 
   IRpcCustomItem = interface(IInterface)
-  ['{3441C47B-364D-4BE6-834E-E05C4FCAE9A6}']
+    ['{3441C47B-364D-4BE6-834E-E05C4FCAE9A6}']
     function GetAsRawString: TXmlString;
     procedure SetAsRawString(const Value: TXmlString);
     function GetAsString: TXmlString;
@@ -107,6 +112,8 @@ type
     function IsInteger: Boolean;
     function IsString: Boolean;
     function IsStruct: Boolean;
+    function ToString(Indent: Integer = 0; ParentIndentSpace: String = '')
+      : TXmlString;
     procedure Base64StrLoadFromStream(Stream: TStream);
     procedure Base64StrSaveToStream(Stream: TStream);
     procedure Base64StrLoadFromFile(const FileName: TXmlString);
@@ -174,6 +181,8 @@ type
     function IsInteger: Boolean;
     function IsString: Boolean;
     function IsStruct: Boolean;
+    function ToString(Indent: Integer = 0; ParentIndentSpace: String = '')
+      : TXmlString;
     procedure Base64StrLoadFromStream(Stream: TStream); virtual;
     procedure Base64StrSaveToStream(Stream: TStream); virtual;
     procedure Base64StrLoadFromFile(const FileName: TXmlString); virtual;
@@ -210,7 +219,7 @@ type
   end;
 
   IRpcResult = interface(IRpcCustomItem)
-  ['{ACD2CA2C-65D1-4656-8FF1-F265237E090F}']
+    ['{ACD2CA2C-65D1-4656-8FF1-F265237E090F}']
     function GetErrorCode: Integer;
     function GetErrorMsg: TXmlString;
 
@@ -236,7 +245,7 @@ type
   end;
 
   IRpcCustomArray = interface(IInterface)
-  ['{8177A796-7C3B-4C01-901C-88A13DA61F85}']
+    ['{8177A796-7C3B-4C01-901C-88A13DA61F85}']
     function GetItems(Index: Integer): TRpcArrayItem;
     procedure SetItems(Index: Integer; AItem: TRpcArrayItem);
 
@@ -256,8 +265,8 @@ type
     function Contains(Value: Integer): Boolean; overload;
     function Contains(Value: Double): Boolean; overload;
     procedure Delete(Index: Integer);
-    property Items[Index: Integer]: TRpcArrayItem read GetItems write SetItems;
-        default;
+    property Items[Index: Integer]: TRpcArrayItem read GetItems
+      write SetItems; default;
   end;
 
   TRpcCustomArray = class(TInterfacedObject)
@@ -286,24 +295,28 @@ type
     function Contains(Value: Integer): Boolean; overload;
     function Contains(Value: Double): Boolean; overload;
     procedure Delete(Index: Integer);
-    property Items[Index: Integer]: TRpcArrayItem read GetItems write SetItems;
-        default;
+    property Items[Index: Integer]: TRpcArrayItem read GetItems
+      write SetItems; default;
   end;
 
   IRpcArray = interface(IRpcCustomArray)
-  ['{595D98EE-1718-44ED-94E2-0F8F7A85C247}']
+    ['{595D98EE-1718-44ED-94E2-0F8F7A85C247}']
     function GetAsXML: TXmlString;
+    function ToString(Indent: Integer = 0; ParentIndentSpace: String = '')
+      : TXmlString;
     procedure LoadRawData(DataType: TDataType; Value: TXmlString);
   end;
 
   TRpcArray = class(TRpcCustomArray, IRpcArray)
   public
     function GetAsXML: TXmlString;
+    function ToString(Indent: Integer = 0; ParentIndentSpace: String = '')
+      : TXmlString;
     procedure LoadRawData(DataType: TDataType; Value: TXmlString);
   end;
 
   IRpcStruct = interface(IInterface)
-  ['{7527E27A-6B61-41D6-9546-93DC816D8285}']
+    ['{7527E27A-6B61-41D6-9546-93DC816D8285}']
     function InternalAddItem(const Key: TXmlString): TRpcStructItem;
     function GetKeyList: TXmlStringList;
 
@@ -321,19 +334,24 @@ type
     procedure AddItemDateTime(const Key: TXmlString; Value: TDateTime);
     procedure AddItemBase64Str(const Key: TXmlString; const Value: TXmlString);
     procedure AddItemBase64Raw(const Key: TXmlString; const Value: TXmlString);
-    procedure AddItemBase64StrFromFile(const Key: TXmlString; const FileName: TXmlString);
-    procedure AddItemBase64StrFromStream(const Key: TXmlString; Stream: TStream);
+    procedure AddItemBase64StrFromFile(const Key: TXmlString;
+      const FileName: TXmlString);
+    procedure AddItemBase64StrFromStream(const Key: TXmlString;
+      Stream: TStream);
     function KeyExists(const Key: TXmlString): Boolean;
     procedure Delete(Index: Integer); overload;
     procedure Delete(const Key: TXmlString); overload;
     procedure Clear;
     function Count: Integer;
     function IndexOf(const Key: TXmlString): Integer;
+    function ToString(Indent: Integer = 0; ParentIndentSpace: String = '')
+      : TXmlString;
     function GetAsXML: TXmlString;
     procedure LoadRawData(DataType: TDataType; const Key, Value: TXmlString);
     property KeyList: TXmlStringList read GetKeyList;
     property Items[Index: Integer]: TRpcStructItem read GetItems write SetItems;
-    property Keys[Key: TXmlString]: TRpcStructItem read GetKeys write SetKeys; default;
+    property Keys[Key: TXmlString]: TRpcStructItem read GetKeys
+      write SetKeys; default;
   end;
 
   TRpcStruct = class(TInterfacedObject, IRpcStruct)
@@ -358,23 +376,28 @@ type
     procedure AddItemDateTime(const Key: TXmlString; Value: TDateTime);
     procedure AddItemBase64Str(const Key: TXmlString; const Value: TXmlString);
     procedure AddItemBase64Raw(const Key: TXmlString; const Value: TXmlString);
-    procedure AddItemBase64StrFromFile(const Key: TXmlString; const FileName: TXmlString);
-    procedure AddItemBase64StrFromStream(const Key: TXmlString; Stream: TStream);
+    procedure AddItemBase64StrFromFile(const Key: TXmlString;
+      const FileName: TXmlString);
+    procedure AddItemBase64StrFromStream(const Key: TXmlString;
+      Stream: TStream);
     function KeyExists(const Key: TXmlString): Boolean;
     procedure Delete(Index: Integer); overload;
     procedure Delete(const Key: TXmlString); overload;
     procedure Clear;
     function Count: Integer;
     function IndexOf(const Key: TXmlString): Integer;
+    function ToString(Indent: Integer = 0; ParentIndentSpace: String = '')
+      : TXmlString;
     function GetAsXML: TXmlString;
     procedure LoadRawData(DataType: TDataType; const Key, Value: TXmlString);
     property KeyList: TXmlStringList read GetKeyList;
     property Items[Index: Integer]: TRpcStructItem read GetItems write SetItems;
-    property Keys[Key: TXmlString]: TRpcStructItem read GetKeys write SetKeys; default;
+    property Keys[Key: TXmlString]: TRpcStructItem read GetKeys
+      write SetKeys; default;
   end;
 
   IRpcFunction = interface(IRpcCustomArray)
-  ['{8177A796-7C3B-4C01-901C-88A13DA61F85}']
+    ['{8177A796-7C3B-4C01-901C-88A13DA61F85}']
     function GetRequestXML: TXmlString;
     function GetResponseXML: TXmlString;
     function GetErrorXML: TXmlString;
@@ -383,7 +406,8 @@ type
 
     procedure Clear;
     procedure SetError(Code: Integer; const Msg: TXmlString);
-    property ObjectMethod: TXmlString read GetObjectMethod write SetObjectMethod;
+    property ObjectMethod: TXmlString read GetObjectMethod
+      write SetObjectMethod;
     property RequestXML: TXmlString read GetRequestXML;
     property ResponseXML: TXmlString read GetResponseXML;
     property ErrorXML: TXmlString read GetErrorXML;
@@ -403,7 +427,8 @@ type
   public
     procedure Clear; override;
     procedure SetError(Code: Integer; const Msg: TXmlString);
-    property ObjectMethod: TXmlString read GetObjectMethod write SetObjectMethod;
+    property ObjectMethod: TXmlString read GetObjectMethod
+      write SetObjectMethod;
     property RequestXML: TXmlString read GetRequestXML;
     property ResponseXML: TXmlString read GetResponseXML;
     property ErrorXML: TXmlString read GetErrorXML;
@@ -420,7 +445,7 @@ implementation
 uses Variants;
 
 {
-******************************** TCustomItem ***********************************
+  ******************************** TCustomItem ***********************************
 }
 
 procedure TRpcCustomItem.Clear;
@@ -447,6 +472,41 @@ begin
   FString := Value;
 end;
 
+function TRpcCustomItem.ToString(Indent: Integer = 0;
+  ParentIndentSpace: String = ''): TXmlString;
+var
+  i: Integer;
+  IndentSpace, Line: String;
+begin
+  IndentSpace := EmptyStr;
+  for i := 0 to Indent - 1 do
+    IndentSpace := IndentSpace + ' ';
+
+  case FDataType of
+    dtString:
+      Result := AsString;
+    dtInteger:
+      Result := IntToStr(AsInteger);
+    dtFloat:
+      Result := FloatToStr(AsFloat);
+    dtBase64:
+      Result := AsBase64Str;
+    dtDateTime:
+      Result := DateTimeToStr(AsDateTime);
+    dtBoolean:
+      Result := BoolToStr(AsBoolean, True);
+    dtStruct:
+      Result := AsStruct.ToString(Indent + 2, IndentSpace);
+    dtArray:
+      Result := AsArray.ToString(Indent + 2, IndentSpace);
+  else
+    raise EXmlRpcError.Create
+      ('Item type can not be converted into a AnsiString')
+  end;
+
+  Result := IndentSpace + Result;
+end;
+
 function TRpcCustomItem.GetAsString: TXmlString;
 begin
   case FDataType of
@@ -467,7 +527,8 @@ begin
     dtArray:
       Result := AsArray.GetAsXML;
   else
-    raise EXmlRpcError.Create('Item type can not be converted into a AnsiString')
+    raise EXmlRpcError.Create
+      ('Item type can not be converted into a AnsiString')
   end;
 end;
 
@@ -541,15 +602,14 @@ begin
   if (FDataType = dtBase64) then
     Result := MimeDecodeString(FBase64)
   else
-    raise
-      EXmlRpcError.Create('Item is not a base64 type')
+    raise EXmlRpcError.Create('Item is not a base64 type')
 end;
 
 procedure TRpcCustomItem.SetAsBase64Str(const Value: TXmlString);
 begin
   Clear;
   FDataType := dtBase64;
-  FBase64 := MimeEncodeString{NoCRLF}(Value);
+  FBase64 := MimeEncodeString { NoCRLF } (Value);
 end;
 
 function TRpcCustomItem.GetAsVariant: Variant;
@@ -567,10 +627,10 @@ begin
       Result := AsDateTime;
     dtBoolean:
       Result := AsBoolean;
-//    dtStruct:
-//      Result := '<STRUCT>';
-//    dtArray:
-//      Result := '<ARRAY>';
+    //    dtStruct:
+    //      Result := '<STRUCT>';
+    //    dtArray:
+    //      Result := '<ARRAY>';
   else
     raise EXmlRpcError.Create('Item type can not be converted into a variant')
   end;
@@ -589,8 +649,8 @@ begin
   else if VarIsType(Value, varDate) then
     AsDateTime := Value
   else
-    raise EXmlRpcError.Create(
-        'Variant type can not be converted into a XML-RPC item');
+    raise EXmlRpcError.Create
+      ('Variant type can not be converted into a XML-RPC item');
 end;
 
 function TRpcCustomItem.GetAsArray: IRpcArray;
@@ -598,7 +658,8 @@ begin
   if (FDataType = dtArray) then
     Result := FArray
   else
-    raise EXmlRpcError.Create('Item is not a array type: ' + IntToStr(Ord(FDataType)))
+    raise EXmlRpcError.Create('Item is not a array type: ' +
+      IntToStr(Ord(FDataType)))
 end;
 
 procedure TRpcCustomItem.SetAsArray(Value: IRpcArray);
@@ -757,7 +818,7 @@ begin
 end;
 
 {
-******************************** TResult ***************************************
+  ******************************** TResult ***************************************
 }
 
 function TRpcResult.GetErrorCode: Integer;
@@ -819,7 +880,7 @@ begin
 end;
 
 {
-******************************** TCustomArray **********************************
+  ******************************** TCustomArray **********************************
 }
 
 constructor TRpcCustomArray.Create;
@@ -918,13 +979,12 @@ begin
   Result := FList.Count;
 end;
 
-
 function TRpcCustomArray.Contains(Value: Integer): Boolean;
 var
- i:integer;
+  i: integer;
 begin
   Result := False;
-  for i:= 0 to FList.Count-1 do
+  for i := 0 to FList.Count - 1 do
   begin
     if (FList[i] as TRpcArrayItem).IsInteger then
       if (FList[i] as TRpcArrayItem).AsInteger = Value then
@@ -937,10 +997,10 @@ end;
 
 function TRpcCustomArray.Contains(Value: Double): Boolean;
 var
- i:integer;
+  i: integer;
 begin
   Result := False;
-  for i:= 0 to FList.Count-1 do
+  for i := 0 to FList.Count - 1 do
   begin
     if (FList[i] as TRpcArrayItem).IsFloat then
       if (FList[i] as TRpcArrayItem).AsFloat = Value then
@@ -966,9 +1026,8 @@ begin
   FList[Index] := AItem;
 end;
 
-
 {
-******************************** TArray ****************************************
+  ******************************** TArray ****************************************
 }
 
 function TRpcArray.GetAsXML: TXmlString;
@@ -984,19 +1043,20 @@ begin
     for Index := 0 to Count - 1 do
     begin
       case Items[Index].DataType of
-        dtString: Strings.Add('      <value><string>' +
-            Items[Index].AsRawString +
+        dtString:
+          Strings.Add('      <value><string>' + Items[Index].AsRawString +
             '</string></value>');
-        dtInteger: Strings.Add('      <value><int>' +
-            IntToStr(Items[Index].AsInteger) +
+        dtInteger:
+          Strings.Add('      <value><int>' + IntToStr(Items[Index].AsInteger) +
             '</int></value>');
-        dtFloat: Strings.Add('      <value><double>' +
-            FloatToRpcStr(Items[Index].AsFloat) +
-            '</double></value>');
-        dtBase64: Strings.Add('      <value><base64>' +
-            Items[Index].AsBase64Raw +
+        dtFloat:
+          Strings.Add('      <value><double>' +
+            FloatToRpcStr(Items[Index].AsFloat) + '</double></value>');
+        dtBase64:
+          Strings.Add('      <value><base64>' + Items[Index].AsBase64Raw +
             '</base64></value>');
-        dtDateTime: Strings.Add('      <value><dateTime.iso8601>' +
+        dtDateTime:
+          Strings.Add('      <value><dateTime.iso8601>' +
             DateTimeToISO(Items[Index].AsDateTime) +
             '</dateTime.iso8601></value>');
         dtBoolean:
@@ -1004,13 +1064,43 @@ begin
             Strings.Add('      <value><boolean>1</boolean></value>')
           else
             Strings.Add('      <value><boolean>0</boolean></value>');
-        dtStruct: Strings.Add(Items[Index].AsStruct.GetAsXML);
-        dtArray: Strings.Add(Items[Index].AsArray.GetAsXML);
+        dtStruct:
+          Strings.Add(Items[Index].AsStruct.GetAsXML);
+        dtArray:
+          Strings.Add(Items[Index].AsArray.GetAsXML);
       end;
     end;
     Strings.Add('  </data>');
     Strings.Add('</array>');
     Strings.Add('</value>');
+    Result := Strings.Text;
+  finally
+    Strings.Free;
+  end;
+end;
+
+function TRpcArray.ToString(Indent: Integer = 0; ParentIndentSpace: String = '')
+  : TXmlString;
+var
+  i: Integer;
+  IndentSpace, Line: String;
+  Strings: TXmlStrings;
+begin
+  IndentSpace := EmptyStr;
+  for i := 0 to Indent - 1 do
+    IndentSpace := IndentSpace + ' ';
+
+  Strings := TXmlStringList.Create;
+  try
+    Strings.Add('[');
+    for i := 0 to Count - 1 do
+    begin
+      Line := Format('%s', [Items[i].ToString(Indent + 2, IndentSpace)]);
+      if i < Count - 1 then
+        Line := Line + ', ';
+      Strings.Add(Line);
+    end;
+    Strings.Add(ParentIndentSpace + ']');
     Result := Strings.Text;
   finally
     Strings.Free;
@@ -1035,9 +1125,8 @@ begin
   end;
 end;
 
-
 {
-******************************** TStruct ***************************************
+  ******************************** TStruct ***************************************
 }
 
 constructor TRpcStruct.Create;
@@ -1047,7 +1136,7 @@ end;
 
 destructor TRpcStruct.Destroy;
 var
-  Index : Integer;
+  Index: Integer;
 begin
   for Index := FKeyList.Count - 1 downto 0 do
     FKeyList.Objects[Index].Free;
@@ -1180,16 +1269,50 @@ begin
   InternalAddItem(Key).AsBase64Raw := Value;
 end;
 
-procedure TRpcStruct.AddItemBase64StrFromFile(const Key: TXmlString; const FileName:
-    TXmlString);
+procedure TRpcStruct.AddItemBase64StrFromFile(const Key: TXmlString;
+  const FileName: TXmlString);
 begin
   InternalAddItem(Key).Base64StrLoadFromFile(FileName);
 end;
 
-procedure TRpcStruct.AddItemBase64StrFromStream(const Key: TXmlString; Stream:
-    TStream);
+procedure TRpcStruct.AddItemBase64StrFromStream(const Key: TXmlString;
+  Stream: TStream);
 begin
   InternalAddItem(Key).Base64StrLoadFromStream(Stream);
+end;
+
+function TRpcStruct.ToString(Indent: Integer = 0;
+  ParentIndentSpace: String = ''): string;
+var
+  i: Integer;
+  IndentSpace, SubIndentSpace, Key, Value, Line: String;
+  Strings: TXmlStrings;
+begin
+
+  IndentSpace := EmptyStr;
+  for i := 0 to Indent - 1 do
+    IndentSpace := IndentSpace + ' ';
+  //  for i := 0 to (Indent + 2) - 1 do
+  //    SubIndentSpace := SubIndentSpace + ' ';
+
+  Strings := TXmlStringList.Create;
+  try
+    Strings.Add('{');
+    for i := 0 to Count - 1 do
+    begin
+      Key := KeyList[i];
+      Value := Items[i].ToString(0);
+      Line := Format('%s: %s', [Key, Value]);
+      if i < Count - 1 then
+        Line := Line + ', ';
+      Strings.Add(IndentSpace + Line);
+    end;
+    Strings.Add(ParentIndentSpace + '}');
+    Strings.TrailingLineBreak := false;
+    Result := Strings.Text;
+  finally
+    Strings.Free;
+  end;
 end;
 
 function TRpcStruct.GetAsXML: TXmlString;
@@ -1208,26 +1331,26 @@ begin
         dtString:
           begin
             Strings.Add('      <name>' + KeyList[I] + '</name>');
-            Strings.Add('      <value><string>' +  Items[I].AsRawString
-                + '</string></value>');
+            Strings.Add('      <value><string>' + Items[I].AsRawString +
+              '</string></value>');
           end;
         dtInteger:
           begin
             Strings.Add('      <name>' + KeyList[I] + '</name>');
             Strings.Add('      <value><int>' + IntToStr(Items[I].AsInteger) +
-                '</int></value>');
+              '</int></value>');
           end;
         dtFloat:
           begin
             Strings.Add('      <name>' + KeyList[I] + '</name>');
-            Strings.Add('      <value><double>'
-                + FloatToRpcStr(Items[I].AsFloat) + '</double></value>');
+            Strings.Add('      <value><double>' +
+              FloatToRpcStr(Items[I].AsFloat) + '</double></value>');
           end;
         dtBase64:
           begin
             Strings.Add('      <name>' + KeyList[I] + '</name>');
             Strings.Add('      <value><base64>' + Items[I].AsBase64Raw +
-                '</base64></value>');
+              '</base64></value>');
           end;
         dtDateTime:
           begin
@@ -1238,9 +1361,7 @@ begin
           end;
         dtBoolean:
           begin
-            Strings.Add('      <name>' +
-              KeyList[I] +
-              '</name>');
+            Strings.Add('      <name>' + KeyList[I] + '</name>');
             if Items[I].AsBoolean then
               Strings.Add('      <value><boolean>1</boolean></value>')
             else
@@ -1267,7 +1388,8 @@ begin
   end;
 end;
 
-procedure TRpcStruct.LoadRawData(DataType: TDataType; const Key, Value: TXmlString);
+procedure TRpcStruct.LoadRawData(DataType: TDataType;
+  const Key, Value: TXmlString);
 begin
   case DataType of
     dtString:
@@ -1286,7 +1408,7 @@ begin
 end;
 
 {
-******************************** TFunction *************************************
+  ******************************** TFunction *************************************
 }
 
 function TRpcFunction.GetObjectMethod: TXmlString;
@@ -1334,7 +1456,7 @@ function TRpcFunction.GetResponseXML: TXmlString;
 var
   Strings: TXmlStrings;
 begin
-  {if we have a error condition return the error instead}
+  { if we have a error condition return the error instead }
   if FErrorCode > 0 then
   begin
     Result := GetErrorXML;
@@ -1366,13 +1488,13 @@ begin
     Strings.Add('        <struct>');
     Strings.Add('            <member>');
     Strings.Add('               <name>faultCode</name>');
-    Strings.Add('               <value><int>' + IntToStr(FErrorCode)
-        + '</int></value>');
+    Strings.Add('               <value><int>' + IntToStr(FErrorCode) +
+      '</int></value>');
     Strings.Add('               </member>');
     Strings.Add('            <member>');
     Strings.Add('               <name>faultString</name>');
-    Strings.Add('               <value><string>' + FErrorMsg
-        + '</string></value>');
+    Strings.Add('               <value><string>' + FErrorMsg +
+      '</string></value>');
     Strings.Add('               </member>');
     Strings.Add('            </struct>');
     Strings.Add('         </value>');
@@ -1394,16 +1516,13 @@ begin
     Strings.Add('   <param>');
     case Items[I].DataType of
       dtInteger:
-        Strings.Add('<value><int>' +
-          IntToStr(Items[I].AsInteger) +
+        Strings.Add('<value><int>' + IntToStr(Items[I].AsInteger) +
           '</int></value>');
       dtString:
-        Strings.Add('<value><string>' +
-          Items[I].AsRawString +
+        Strings.Add('<value><string>' + Items[I].AsRawString +
           '</string></value>');
       dtFloat:
-        Strings.Add('<value><double>' +
-          FloatToRpcStr(Items[I].AsFloat) +
+        Strings.Add('<value><double>' + FloatToRpcStr(Items[I].AsFloat) +
           '</double></value>');
       dtBoolean:
         if Items[I].AsBoolean then
@@ -1412,15 +1531,14 @@ begin
           Strings.Add('<value><boolean>0</boolean></value>');
       dtDateTime:
         Strings.Add('<value><dateTime.iso8601>' +
-          DateTimeToISO(Items[I].AsDateTime) +
-          '</dateTime.iso8601></value>');
+          DateTimeToISO(Items[I].AsDateTime) + '</dateTime.iso8601></value>');
       dtArray:
         Strings.Add(Items[I].AsArray.GetAsXML);
       dtStruct:
         Strings.Add(Items[I].AsStruct.GetAsXML);
       dtBase64:
-        Strings.Add('<value><base64>' + Items[I].AsBase64Raw
-            + '</base64></value>');
+        Strings.Add('<value><base64>' + Items[I].AsBase64Raw +
+          '</base64></value>');
     end;
     Strings.Add('   </param>');
   end;
@@ -1428,4 +1546,3 @@ begin
 end;
 
 end.
-
