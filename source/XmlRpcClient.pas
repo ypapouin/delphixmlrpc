@@ -174,7 +174,6 @@ implementation
 {$IFDEF WIN32}
 
 uses
-  App.Debug,
   Windows;
 {$ENDIF}
 { ------------------------------------------------------------------------------ }
@@ -549,6 +548,7 @@ begin
     FSession.Request.Accept := '*/*';
     FSession.Request.ContentType := 'text/xml';
     FSession.Request.Connection := 'keep-alive';
+    FSession.HandleRedirects := True;
   end;
 
   // Always update timeouts
